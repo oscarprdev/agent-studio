@@ -34,10 +34,17 @@ npm run lint       # eslint (no typecheck script exists)
 - No backend, database, or API routes yet — this is a frontend-only scaffold
 - PRD with full product spec is at `PRD.md`
 
-## Skills
+## Skills (mandatory on every code touch)
 
-Two project-local skills in `.agents/skills/`:
-- `shadcn` — shadcn component management and debugging
-- `vercel-react-best-practices` — React/Next.js perf patterns
+Load these **before** reading, writing, or reviewing any code:
 
-Full registry at `.atl/skill-registry.md`.
+| Skill | When | Path |
+|---|---|---|
+| `shadcn` | Any UI component, styling, or shadcn work | `.agents/skills/shadcn/SKILL.md` |
+| `vercel-react-best-practices` | Any React/Next.js code (new, refactor, review) | `.agents/skills/vercel-react-best-practices/SKILL.md` |
+
+The `shadcn` skill enforces project-specific rules: `FieldGroup`+`Field` for forms, `gap-*` not `space-*`, `size-*` for equal dimensions, `data-icon` for button icons, semantic color tokens, and more. Violating these produces code that looks right but breaks shadcn composition.
+
+The `vercel-react-best-practices` skill covers 70 performance rules across waterfalls, bundle size, server-side, re-renders, and rendering. Critical ones: parallelize independent fetches, avoid barrel imports, use `Suspense` boundaries, authenticate Server Actions inside the action.
+
+Full skill registry at `.atl/skill-registry.md`.
