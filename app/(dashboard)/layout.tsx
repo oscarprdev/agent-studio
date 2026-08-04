@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/lib/auth-context"
 import { Sidebar } from "@/components/layout/sidebar"
 import { MobileSidebar } from "@/components/layout/mobile-sidebar"
 
@@ -11,17 +12,17 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const router = useRouter()
+  const { isAuthenticated } = useAuth()
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
     // SSR hydration guard: set in effect to avoid mismatch between server/client
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true)
-    const token = localStorage.getItem("auth_token")
-    if (!token) {
-      router.push("/")
+    if (!isAuthenticated) {
+      router.push("/login")
     }
-  }, [router])
+  }, [router, isAuthenticated])
 
   if (!isMounted) {
     return null

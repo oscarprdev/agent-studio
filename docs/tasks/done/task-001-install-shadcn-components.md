@@ -1,62 +1,67 @@
-# Task 001 - Install shadcn UI components
+# Task 001 - Install shadcn form components
 
 ## Reference
 
 Plan document:
 
-docs/plans/plan-age-1-app-shell.md
+docs/plans/plan-002-authentication.md
 
 Relevant section:
 
-Operation 1: Install shadcn components
+### Dependencies
+
+```
+- input (for forms)
+- label (for forms)
+- dropdown-menu (for user menu)
+- alert-dialog (for logout confirmation)
+- separator (already installed)
+```
 
 ---
 
 ## Description
 
-Install the four shadcn component dependencies required by the app shell: `card`, `avatar`, `tooltip`, and `separator`. These components are prerequisites for the sidebar, top bar, and dashboard pages created in later tasks.
-
-This task performs a single CLI command that scaffolds the component files into `components/ui/` using the project's existing `base-nova` style preset.
+Install four shadcn/ui components needed by auth forms and user menu. No new npm packages. This is plumbing — pure setup.
 
 ---
 
 ## Acceptance Criteria
 
-- `components/ui/card.tsx` exists and exports `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`
-- `components/ui/avatar.tsx` exists and exports `Avatar`, `AvatarImage`, `AvatarFallback`
-- `components/ui/tooltip.tsx` exists and exports `Tooltip`, `TooltipTrigger`, `TooltipContent`, `TooltipProvider`
-- `components/ui/separator.tsx` exists and exports `Separator`
-- All component files use `@/components/ui` alias (no hardcoded paths)
-- All component files use base primitives (not radix) per project configuration
-- `npx shadcn@latest info` lists all four components as installed
+- `input` component exists at `components/ui/input.tsx`
+- `label` component exists at `components/ui/label.tsx`
+- `dropdown-menu` component exists at `components/ui/dropdown-menu.tsx`
+- `alert-dialog` component exists at `components/ui/alert-dialog.tsx`
+- All four import without errors
 
 ---
 
 ## Out Of Scope
 
-- No custom modification of the installed component files
-- No usage of these components — they are scaffolding only
-- `Sheet` component is not installed here (needed by mobile sidebar, see Task 005)
+- Any customization of these components
+- Creating new form patterns (handled later)
+- CSS changes
 
 ---
 
 ## Domain
 
-### shadcn UI Components
+### shadcn/ui Components
 
-The project uses shadcn/ui as its component library with the `base-nova` preset. Components are sourced as copyable source code rather than a bundled npm package. This task provisions the foundation UI building blocks — cards for stat displays, avatar for user section, tooltip for future hover interactions, and separator for visual dividers in the sidebar.
+Input, Label, DropdownMenu, and AlertDialog are shadcn/ui primitives. They follow the project's base-nova style using `data-slot` patterns, `@base-ui/react` primitives, and `cn()` for class merging.
 
-**Implementation scope:**
-
-Run the shadcn CLI to add four components. No custom code is written.
+This task installs them so other tasks can import and compose them.
 
 ---
 
 ## Graph
 
+Not applicable — mechanical install.
+
 ```mermaid
-graph TD
-    A[Run shadcn CLI command] --> B[CLI downloads component sources]
-    B --> C[Files written to components/ui/]
-    C --> D[Verify all four files exist]
+graph LR
+    A[run shadcn add] --> B[input]
+    A --> B[label]
+    A --> B[dropdown-menu]
+    A --> B[alert-dialog]
 ```
