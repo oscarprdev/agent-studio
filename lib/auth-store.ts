@@ -23,7 +23,7 @@ export interface Workspace {
   createdAt: string;
 }
 
-interface AuthResult<T = void> {
+export interface AuthResult<T = void> {
   success: boolean;
   error?: string;
   result?: T;
