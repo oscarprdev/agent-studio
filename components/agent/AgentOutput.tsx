@@ -60,41 +60,41 @@ export function AgentOutput({ agent, className }: AgentOutputProps) {
           )}
         </div>
 
-        {agent.tools.length > 0 && (
-          <>
-            <Separator />
-            <div className="flex flex-col gap-2">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Tools
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {agent.tools.map((tool) => (
-                  <Badge key={tool.id} variant="outline">
-                    {tool.name}
-                  </Badge>
-                ))}
-              </div>
+        <Separator />
+        <div className="flex flex-col gap-2">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Tools
+          </span>
+          {agent.tools.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {agent.tools.map((tool) => (
+                <Badge key={tool.id} variant="outline">
+                  {tool.name}
+                </Badge>
+              ))}
             </div>
-          </>
-        )}
+          ) : (
+            <p className="text-sm text-muted-foreground">None</p>
+          )}
+        </div>
 
-        {agent.skills.length > 0 && (
-          <>
-            <Separator />
-            <div className="flex flex-col gap-2">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Skills
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {agent.skills.map((skill) => (
-                  <Badge key={skill.id} variant="outline">
-                    {skill.name}
-                  </Badge>
-                ))}
-              </div>
+        <Separator />
+        <div className="flex flex-col gap-2">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Skills
+          </span>
+          {agent.skills.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {agent.skills.map((skill) => (
+                <Badge key={skill.id} variant="outline">
+                  {skill.name}
+                </Badge>
+              ))}
             </div>
-          </>
-        )}
+          ) : (
+            <p className="text-sm text-muted-foreground">None</p>
+          )}
+        </div>
       </CardContent>
     </Card>
   )
