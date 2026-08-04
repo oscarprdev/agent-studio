@@ -2,8 +2,8 @@
 
 import { Home, Bot, Wrench, MessageSquare, Plug, Store, Settings } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { SidebarNavItem } from "./sidebar-nav-item"
+import { UserMenu } from "./user-menu"
 
 const navItems = [
   { label: "Home", href: "/dashboard", icon: Home },
@@ -47,21 +47,7 @@ export function Sidebar() {
       <Separator className="bg-sidebar-border" />
 
       {/* User section */}
-      <div className="flex items-center gap-3 px-4 py-4">
-        <Avatar className="size-8">
-          <AvatarFallback className="bg-sidebar-accent text-sidebar-accent-foreground text-xs font-medium">
-            U
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col min-w-0">
-          <span className="text-sm font-medium text-sidebar-foreground truncate">
-            User
-          </span>
-          <span className="text-xs text-sidebar-foreground/60 truncate">
-            user@example.com
-          </span>
-        </div>
-      </div>
+      <UserMenu />
     </div>
   )
 }
