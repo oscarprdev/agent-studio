@@ -24,14 +24,14 @@ export default function Home() {
             <p className="text-muted-foreground">
               Welcome back, {user?.name ?? "there"}
             </p>
-            <Button render={<Link href="/dashboard" />} nativeButton={false} size="lg">
-              Go to Dashboard
-            </Button>
+            <Link href="/dashboard">
+              <Button size="lg">Go to Dashboard</Button>
+            </Link>
           </div>
         ) : (
-          <Button render={<Link href="/login" />} nativeButton={false} size="lg">
-            Sign In
-          </Button>
+          <Link href="/login">
+            <Button size="lg">Sign In</Button>
+          </Link>
         )}
       </div>
     </div>
