@@ -28,8 +28,8 @@ export function GoalStep({ value, onChange }: GoalStepProps) {
           className="min-h-32"
         />
         <FieldDescription>
-          Describe the agent's purpose in natural language. The more specific you
-          are, the better the generated agent will be.
+          Describe the agent&apos;s purpose in natural language. The more
+          specific you are, the better the generated agent will be.
         </FieldDescription>
       </Field>
     </FieldGroup>

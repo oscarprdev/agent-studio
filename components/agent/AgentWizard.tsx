@@ -137,15 +137,6 @@ export function AgentWizard({ onSave }: AgentWizardProps) {
     }))
   }
 
-function handleSkillUpdate(skillId: string, updates: Partial<WizardState["skills"][number]>) {
-    setState((prev) => ({
-      ...prev,
-      skills: prev.skills.map((s) =>
-        s.id === skillId ? { ...s, ...updates } : s
-      ),
-    }))
-  }
-
   function handleReset() {
     setState({
       currentStep: 0,
@@ -183,7 +174,6 @@ function handleSkillUpdate(skillId: string, updates: Partial<WizardState["skills
             skills={state.skills}
             onAdd={handleSkillAdd}
             onRemove={handleSkillRemove}
-            onUpdate={handleSkillUpdate}
           />
         )}
         {currentStep === 3 && (

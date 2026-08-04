@@ -9,7 +9,6 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-  CardFooter,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,7 +25,6 @@ interface SkillsStepProps {
   skills: Skill[]
   onAdd: (skill: Skill) => void
   onRemove: (skillId: string) => void
-  onUpdate: (skillId: string, updates: Partial<Skill>) => void
 }
 
 export function SkillsStep({ skills, onAdd, onRemove }: SkillsStepProps) {
