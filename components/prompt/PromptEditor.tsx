@@ -38,7 +38,7 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
     return (
       <div className="flex flex-col items-center gap-4">
         <p className="text-muted-foreground">Prompt not found</p>
-        <Button variant="outline" render={<Link href="/prompts" />}>
+        <Button variant="outline" render={<Link href="/prompts" />} nativeButton={false}>
           Back to List
         </Button>
       </div>
@@ -62,7 +62,7 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <Button onClick={handleSave}>Save Changes</Button>
-        <Button variant="outline" render={<Link href="/prompts" />}>
+        <Button variant="outline" render={<Link href="/prompts" />} nativeButton={false}>
           Back to List
         </Button>
       </div>

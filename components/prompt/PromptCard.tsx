@@ -48,8 +48,8 @@ export function PromptCard({ prompt, onDelete }: PromptCardProps) {
         </p>
       </CardContent>
 
-      <CardFooter className="flex items-center gap-2">
-        <Button variant="outline" size="sm" render={<Link href={`/prompts/${prompt.id}`} />}>
+      <CardFooter className="gap-2">
+        <Button variant="outline" size="sm" render={<Link href={`/prompts/${prompt.id}`} />} nativeButton={false}>
           View
         </Button>
         {onDelete && (

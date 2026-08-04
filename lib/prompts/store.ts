@@ -19,20 +19,12 @@ function persist(prompts: Prompt[]): void {
 
 /** Returns all saved prompts, or an empty array on missing/invalid localStorage. */
 export function getAll(): Prompt[] {
-  try {
-    return readAll();
-  } catch {
-    return [];
-  }
+  return readAll();
 }
 
 /** Returns a prompt by ID, or null if not found. */
 export function getById(id: string): Prompt | null {
-  try {
-    return readAll().find((p) => p.id === id) ?? null;
-  } catch {
-    return null;
-  }
+  return readAll().find((p) => p.id === id) ?? null;
 }
 
 /** Creates a new prompt with auto-generated UUID and timestamps. */

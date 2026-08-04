@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { getAll } from "@/lib/prompts/store"
 import type { Prompt } from "@/lib/prompts/types"
@@ -15,13 +15,23 @@ import {
 } from "@/components/ui/empty"
 
 export default function PromptsPage() {
-  const [prompts] = useState<Prompt[]>(() => getAll() ?? [])
+  const [prompts, setPrompts] = useState<Prompt[]>(() => getAll() ?? [])
+
+  useEffect(() => {
+    function handleVisibility() {
+      if (document.visibilityState === "visible") {
+        setPrompts(getAll() ?? [])
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisibility)
+    return () => document.removeEventListener("visibilitychange", handleVisibility)
+  }, [])
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">My Prompts</h1>
-        <Button render={<Link href="/prompts/new" />}>New Prompt</Button>
+        <Button render={<Link href="/prompts/new" />} nativeButton={false}>New Prompt</Button>
       </div>
 
       {prompts.length === 0 ? (
@@ -33,7 +43,7 @@ export default function PromptsPage() {
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
-            <Button render={<Link href="/prompts/new" />}>New Prompt</Button>
+            <Button render={<Link href="/prompts/new" />} nativeButton={false}>New Prompt</Button>
           </EmptyContent>
         </Empty>
       ) : (
