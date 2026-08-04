@@ -16,6 +16,7 @@ import type { WizardState, AgentDefinition } from "@/lib/agents/types"
 interface GenerateStepProps {
   wizardState: WizardState
   onGenerate: () => void
+  onSave?: () => void
   isGenerating: boolean
   generatedAgent?: AgentDefinition
 }
@@ -23,6 +24,7 @@ interface GenerateStepProps {
 export function GenerateStep({
   wizardState,
   onGenerate,
+  onSave,
   isGenerating,
   generatedAgent,
 }: GenerateStepProps) {
@@ -102,7 +104,7 @@ export function GenerateStep({
         <>
           <AgentOutput agent={generatedAgent} />
           <div className="flex flex-col gap-3">
-            <Button onClick={onGenerate} size="lg">
+            <Button onClick={onSave} size="lg">
               Save Agent
             </Button>
             <Button variant="outline" size="lg" onClick={handleCopy}>
