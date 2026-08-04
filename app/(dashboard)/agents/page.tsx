@@ -6,6 +6,7 @@ import { getAll, remove } from "@/lib/agents/store"
 import type { Agent } from "@/lib/agents/types"
 import { AgentCard } from "@/components/agent/AgentCard"
 import { Button } from "@/components/ui/button"
+import { toast } from "@/components/ui/toast"
 import {
   Empty,
   EmptyHeader,
@@ -29,8 +30,18 @@ export default function AgentsPage() {
   }, [])
 
   function handleDelete(id: string) {
-    remove(id)
-    setAgents(getAll())
+    const agent = agents.find((a) => a.id === id)
+    try {
+      const removed = remove(id)
+      if (removed) {
+        setAgents(getAll())
+        toast.add({ title: `Deleted "${agent?.name ?? "agent"}"`, type: "success" })
+      } else {
+        toast.add({ title: "Failed to delete agent", type: "error" })
+      }
+    } catch {
+      toast.add({ title: "Failed to delete agent", type: "error" })
+    }
   }
 
   return (

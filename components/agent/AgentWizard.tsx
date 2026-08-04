@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { toast } from "@/components/ui/toast"
 import { ProgressIndicator } from "@/components/agent/wizard/ProgressIndicator"
 import { GoalStep } from "@/components/agent/wizard/GoalStep"
 import { ToolsStep } from "@/components/agent/wizard/ToolsStep"
@@ -86,6 +87,8 @@ export function AgentWizard({ onSave }: AgentWizardProps) {
           updatedAt: new Date().toISOString(),
         },
       }))
+    } catch {
+      toast.add({ title: "Generation failed. Please try again.", type: "error" })
     } finally {
       setIsGenerating(false)
     }

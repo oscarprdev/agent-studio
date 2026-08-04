@@ -10,6 +10,17 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import type { Agent } from "@/lib/agents/types"
 
 interface AgentCardProps {
@@ -50,13 +61,33 @@ export function AgentCard({ agent, onDelete }: AgentCardProps) {
           View
         </Button>
         {onDelete && (
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => onDelete(agent.id)}
-          >
-            Delete
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger
+              render={
+                <Button variant="destructive" size="sm" />
+              }
+            >
+              Delete
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete agent</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete &quot;{agent.name}&quot;? This
+                  action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  variant="destructive"
+                  onClick={() => onDelete(agent.id)}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
       </CardFooter>
     </Card>
