@@ -12,6 +12,7 @@ import {
   FieldLabel,
   FieldError,
 } from "@/components/ui/field";
+import { Separator } from "@/components/ui/separator";
 import { OAuthButton } from "./oauth-button";
 
 export function SignupForm() {
@@ -114,7 +115,7 @@ export function SignupForm() {
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
+          <Separator />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-background px-2 text-muted-foreground">

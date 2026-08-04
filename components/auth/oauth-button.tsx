@@ -23,7 +23,7 @@ interface OAuthButtonProps {
 
 export function OAuthButton({ className }: OAuthButtonProps) {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, signup } = useAuth();
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,13 +31,24 @@ export function OAuthButton({ className }: OAuthButtonProps) {
     setError("");
     setIsLoading(true);
 
-    const result = login("user@github.mock", "mockpassword123");
-    setIsLoading(false);
+    // Mock OAuth: try signup first (creates user if doesn't exist), fallback to login
+    const signupResult = signup("user@github.mock", "mockpassword123", "mockpassword123");
 
-    if (result.success) {
-      router.push("/dashboard");
+    if (signupResult.success) {
+      setIsLoading(false);
+      router.push("/onboarding");
+    } else if (signupResult.error === "Account already exists") {
+      const result = login("user@github.mock", "mockpassword123");
+      setIsLoading(false);
+
+      if (result.success) {
+        router.push("/dashboard");
+      } else {
+        setError(result.error ?? "GitHub sign in failed");
+      }
     } else {
-      setError(result.error ?? "GitHub sign in failed");
+      setIsLoading(false);
+      setError(signupResult.error ?? "GitHub sign in failed");
     }
   }
 

@@ -99,18 +99,17 @@ export function login(input: {
     return { success: false, error: "Password must be at least 8 characters" };
   }
 
-  const users = getUsers();
-  const user = users.find((u) => u.email === email);
-  if (!user) {
+  const allUsers = getItem<StoredUser[]>(AUTH_USERS_KEY) ?? [];
+  const storedUser = allUsers.find((u) => u.email === email);
+  if (!storedUser) {
     return { success: false, error: "No account found with this email" };
   }
-
-  // Password check (mock: stored as-is)
-  const allUsers = getItem<User[]>(AUTH_USERS_KEY) ?? [];
-  const storedUser = allUsers.find((u) => u.email === email) as StoredUser | undefined;
-  if (!storedUser || storedUser.password !== password) {
+  if (storedUser.password !== password) {
     return { success: false, error: "Invalid password" };
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password: _pw, ...user } = storedUser;
 
   // Store current user
   if (!setItem(AUTH_CURRENT_USER_KEY, user)) {
