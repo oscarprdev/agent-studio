@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useCallback, useEffect } from "react"
 import {
   Card,
   CardContent,
@@ -29,22 +29,30 @@ export function GenerateStep({
   generatedAgent,
 }: GenerateStepProps) {
   const [copied, setCopied] = useState(false)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const goalFirstLine = wizardState.goal.split("\n")[0] || wizardState.goal
   const contextFirstLine = wizardState.context
     ? wizardState.context.split("\n")[0]
     : null
 
-  const handleCopy = async () => {
+  const handleCopy = useCallback(async () => {
     if (!generatedAgent) return
     try {
       await navigator.clipboard.writeText(JSON.stringify(generatedAgent, null, 2))
       setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+      timeoutRef.current = setTimeout(() => setCopied(false), 2000)
     } catch {
       // Clipboard API not available or denied
     }
-  }
+  }, [generatedAgent])
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [])
 
   return (
     <div className="flex flex-col gap-6">

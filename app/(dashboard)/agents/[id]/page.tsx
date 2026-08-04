@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import { getById } from "@/lib/agents/store"
@@ -12,8 +12,7 @@ import { TopBar } from "@/components/layout/top-bar"
 export default function AgentDetailPage() {
   const params = useParams()
   const id = params.id as string
-  const initialAgent = useMemo(() => getById(id), [id])
-  const [agent, setAgent] = useState<Agent | null>(initialAgent)
+  const [agent, setAgent] = useState<Agent | null>(() => getById(id))
 
   if (!agent) {
     return (
@@ -33,7 +32,7 @@ export default function AgentDetailPage() {
     <>
       <TopBar title={agent.name} />
       <div className="flex flex-1 flex-col gap-6 p-6">
-        <AgentEditor agent={agent} onSave={setAgent} />
+        <AgentEditor key={agent.updatedAt} agent={agent} onSave={setAgent} />
       </div>
     </>
   )

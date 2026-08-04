@@ -30,6 +30,7 @@ export function ProgressIndicator({
               type="button"
               onClick={() => onStepClick?.(index)}
               disabled={!isClickable(index)}
+              aria-label={`Step ${index + 1}: ${step}${isCompleted(index) ? " (completed)" : ""}`}
               className={cn(
                 "flex size-10 shrink-0 items-center justify-center rounded-full border-2 text-sm font-medium transition-colors",
                 isCompleted(index) && "border-primary bg-primary/15 text-primary",

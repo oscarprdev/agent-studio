@@ -43,13 +43,9 @@ export function create(input: CreateAgentInput): Agent {
     updatedAt: now,
   };
 
-  try {
-    const agents = readAll();
-    agents.push(agent);
-    persist(agents);
-  } catch {
-    // Agent returned even if localStorage fails — caller gets the object
-  }
+  const agents = readAll();
+  agents.push(agent);
+  persist(agents);
 
   return agent;
 }
