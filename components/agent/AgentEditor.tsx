@@ -59,7 +59,16 @@ export function AgentEditor({ agent, onSave }: AgentEditorProps) {
       </div>
 
       {isPreview ? (
-        <AgentOutput agent={agent} />
+        <AgentOutput
+          agent={{
+            name: name.trim(),
+            description: description.trim(),
+            model: agent.model,
+            system_prompt: systemPrompt.trim(),
+            skills: agent.skills,
+            tools: agent.tools,
+          }}
+        />
       ) : (
         <>
           <FieldGroup>

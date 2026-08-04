@@ -12,20 +12,8 @@ import { ContextStep } from "@/components/agent/wizard/ContextStep"
 import { GenerateStep } from "@/components/agent/wizard/GenerateStep"
 import { generateAgent } from "@/lib/ai/generate-agent"
 import * as store from "@/lib/agents/store"
+import { TOOL_MAP } from "@/lib/agents/tools"
 import type { Agent, Tool, WizardState } from "@/lib/agents/types"
-
-const TOOL_MAP: Record<string, Tool> = {
-  github: { id: "github", name: "GitHub", description: "Access repositories, create issues, manage pull requests", category: "development" },
-  linear: { id: "linear", name: "Linear", description: "Manage projects, create and update issues", category: "project-management" },
-  notion: { id: "notion", name: "Notion", description: "Read and write to Notion pages and databases", category: "project-management" },
-  slack: { id: "slack", name: "Slack", description: "Send messages, search channels", category: "communication" },
-  jira: { id: "jira", name: "Jira", description: "Create and manage issues, sprints, and boards", category: "project-management" },
-  figma: { id: "figma", name: "Figma", description: "Access design files and inspect components", category: "design" },
-  docker: { id: "docker", name: "Docker", description: "Manage containers, images, and compose files", category: "development" },
-  aws: { id: "aws", name: "AWS", description: "Interact with AWS services", category: "cloud" },
-  gcp: { id: "gcp", name: "GCP", description: "Access Google Cloud services", category: "cloud" },
-  azure: { id: "azure", name: "Azure", description: "Manage Azure resources and deployments", category: "cloud" },
-}
 
 interface AgentWizardProps {
   onSave?: (agent: Agent) => void
