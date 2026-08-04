@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useParams } from "next/navigation"
 import { getById } from "@/lib/prompts/store"
 import type { Prompt } from "@/lib/prompts/types"
@@ -8,11 +8,7 @@ import { PromptEditor } from "@/components/prompt/PromptEditor"
 
 export default function PromptDetailPage() {
   const params = useParams<{ id: string }>()
-  const [prompt, setPrompt] = useState<Prompt | null>(null)
-
-  useEffect(() => {
-    setPrompt(getById(params.id))
-  }, [params.id])
+  const [prompt] = useState<Prompt | null>(() => getById(params.id))
 
   return (
     <div className="flex flex-1 flex-col items-center px-4 py-12 sm:px-6 lg:px-8">

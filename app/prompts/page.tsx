@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { getAll } from "@/lib/prompts/store"
 import type { Prompt } from "@/lib/prompts/types"
@@ -15,11 +15,7 @@ import {
 } from "@/components/ui/empty"
 
 export default function PromptsPage() {
-  const [prompts, setPrompts] = useState<Prompt[]>([])
-
-  useEffect(() => {
-    setPrompts(getAll() ?? [])
-  }, [])
+  const [prompts] = useState<Prompt[]>(() => getAll() ?? [])
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-6">
