@@ -44,32 +44,24 @@ export function AgentEditor({ agent, onSave }: AgentEditorProps) {
   }
 
   function handleDuplicate() {
-    const now = new Date().toISOString()
-    const duplicate: Agent = {
-      ...agent,
-      id: crypto.randomUUID(),
-      name: `${agent.name} (Copy)`,
-      createdAt: now,
-      updatedAt: now,
-    }
     store.create({
-      name: duplicate.name,
-      description: duplicate.description,
-      model: duplicate.model,
-      system_prompt: duplicate.system_prompt,
-      skills: duplicate.skills,
-      tools: duplicate.tools,
+      name: `${agent.name} (Copy)`,
+      description: agent.description,
+      model: agent.model,
+      system_prompt: agent.system_prompt,
+      skills: agent.skills,
+      tools: agent.tools,
     })
     router.push("/agents")
   }
 
   function handleExportMarkdown() {
     const md = [
-      `# ${agent.name}`,
+      `# ${name}`,
       ``,
       `## Description`,
       ``,
-      agent.description,
+      description,
       ``,
       `## Model`,
       ``,
@@ -77,7 +69,7 @@ export function AgentEditor({ agent, onSave }: AgentEditorProps) {
       ``,
       `## System Prompt`,
       ``,
-      agent.system_prompt,
+      systemPrompt,
       ``,
       `## Tools`,
       ``,
@@ -98,7 +90,7 @@ export function AgentEditor({ agent, onSave }: AgentEditorProps) {
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `${agent.name.replace(/[^a-z0-9]/gi, "-").toLowerCase()}.md`
+    a.download = `${name.replace(/[^a-z0-9]/gi, "-").toLowerCase()}.md`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
