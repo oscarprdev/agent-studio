@@ -88,6 +88,24 @@ export function remove(id: string): boolean {
   }
 }
 
+/** Disconnects a connection by setting its status to "disconnected". Returns the updated connection, or null if not found. */
+export function disconnect(id: string): McpConnection | null {
+  try {
+    const items = readAll();
+    const index = items.findIndex((c) => c.id === id);
+    if (index === -1) return null;
+    const updated: McpConnection = {
+      ...items[index],
+      status: "disconnected",
+    };
+    items[index] = updated;
+    persist(items);
+    return updated;
+  } catch {
+    return null;
+  }
+}
+
 /** Mock-tests a connection with a 1–2 second delay. Resolves with status "connected", or rejects if not found. */
 export function testConnection(id: string): Promise<McpConnection> {
   const delay = 1000 + Math.random() * 1000;

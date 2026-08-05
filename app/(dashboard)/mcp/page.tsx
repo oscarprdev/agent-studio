@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { getAll, remove } from "@/lib/mcp/store"
 import type { McpConnection } from "@/lib/mcp/types"
 import { McpCard } from "@/components/mcp/McpCard"
@@ -17,7 +17,7 @@ import { TopBar } from "@/components/layout/top-bar"
 
 export default function McpConnectionsPage() {
   const [connections, setConnections] = useState<McpConnection[]>(
-    () => getAll() ?? []
+    () => getAll()
   )
   const [showAddSheet, setShowAddSheet] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -28,19 +28,23 @@ export default function McpConnectionsPage() {
     setMounted(true)
   }, [])
 
+  const refreshConnections = useCallback(() => {
+    setConnections(getAll())
+  }, [])
+
   useEffect(() => {
     function handleVisibility() {
       if (document.visibilityState === "visible") {
-        setConnections(getAll() ?? [])
+        refreshConnections()
       }
     }
     document.addEventListener("visibilitychange", handleVisibility)
     return () => document.removeEventListener("visibilitychange", handleVisibility)
-  }, [])
+  }, [refreshConnections])
 
   function deleteConnection(id: string) {
     remove(id)
-    setConnections(getAll() ?? [])
+    refreshConnections()
   }
 
   if (!mounted) return null
@@ -88,7 +92,7 @@ export default function McpConnectionsPage() {
       <McpAddSheet
         open={showAddSheet}
         onOpenChange={setShowAddSheet}
-        onConnectionAdded={() => setConnections(getAll() ?? [])}
+        onConnectionAdded={refreshConnections}
       />
     </>
   )

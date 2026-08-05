@@ -37,7 +37,7 @@ import type { McpConnection } from "@/lib/mcp/types"
 interface McpDetailProps {
   connection: McpConnection
   onSave: (config: Record<string, string>) => Promise<void>
-  onDelete: () => Promise<void>
+  onDisconnect: () => Promise<void>
 }
 
 function formatDate(iso: string): string {
@@ -50,7 +50,7 @@ function formatDate(iso: string): string {
   })
 }
 
-export function McpDetail({ connection, onSave, onDelete }: McpDetailProps) {
+export function McpDetail({ connection, onSave, onDisconnect }: McpDetailProps) {
   const [config, setConfig] = useState<Record<string, string>>({
     ...connection.config,
   })
@@ -89,10 +89,10 @@ export function McpDetail({ connection, onSave, onDelete }: McpDetailProps) {
     }
   }
 
-  async function handleDelete() {
+  async function handleDisconnect() {
     setIsDeleting(true)
     try {
-      await onDelete()
+      await onDisconnect()
     } finally {
       setIsDeleting(false)
       setDeleteDialogOpen(false)
@@ -164,15 +164,14 @@ export function McpDetail({ connection, onSave, onDelete }: McpDetailProps) {
             <AlertDialogHeader>
               <AlertDialogTitle>Disconnect MCP Server</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to disconnect {connection.name}? This will
-                remove the connection configuration.
+                Are you sure you want to disconnect {connection.name}? The connection will be marked as disconnected but your configuration will be saved.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 variant="destructive"
-                onClick={handleDelete}
+                onClick={handleDisconnect}
                 disabled={isDeleting}
               >
                 {isDeleting ? "Disconnecting..." : "Disconnect"}

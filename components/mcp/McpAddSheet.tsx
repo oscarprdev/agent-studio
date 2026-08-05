@@ -11,7 +11,7 @@ import {
 import { McpServerPicker } from "./McpServerPicker"
 import { McpConfigForm } from "./McpConfigForm"
 import { getAll, create } from "@/lib/mcp/store"
-import { getServerDefinition } from "@/lib/mcp/servers"
+import { MCP_SERVERS, getServerDefinition } from "@/lib/mcp/servers"
 import { toast } from "@/components/ui/toast"
 
 interface McpAddSheetProps {
@@ -29,7 +29,11 @@ export function McpAddSheet({
   const [selectedType, setSelectedType] = useState<string | null>(null)
 
   const excludedTypes = getAll().map((c) => c.type)
-  const allConnected = excludedTypes.length >= 6
+  const excludedSet = new Set(excludedTypes)
+  const availableServers = MCP_SERVERS.filter(
+    (server) => !excludedSet.has(server.type),
+  )
+  const allConnected = availableServers.length === 0
 
   function resetState() {
     setStep("select")
