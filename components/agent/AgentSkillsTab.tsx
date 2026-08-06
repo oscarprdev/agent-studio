@@ -52,8 +52,8 @@ export function AgentSkillsTab({
       tools: [],
     }
 
-    // Deduplicate by ID
-    if (draftSkills.some((s) => s.id === newSkill.id)) return
+    // Deduplicate by name within the draft (not by ID, since agent already has skills)
+    if (draftSkills.some((s) => s.name.toLowerCase() === newSkill.name.toLowerCase())) return
 
     onChange({ ...draft, skills: [...draftSkills, newSkill] })
 

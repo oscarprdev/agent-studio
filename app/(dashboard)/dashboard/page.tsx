@@ -40,6 +40,8 @@ export default function DashboardPage() {
         setStats((prev) =>
           prev.map((s) => {
             if (s.label === "Agents") return { ...s, count: listAgents().length }
+            if (s.label === "Skills") return { ...s, count: getAllSkills().length }
+            if (s.label === "Prompts") return { ...s, count: getAllPrompts().length }
             return s
           }),
         )
