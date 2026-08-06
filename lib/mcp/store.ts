@@ -1,4 +1,4 @@
-import type { CreateMcpConnectionInput, McpConnection } from "./types";
+import type { CreateMcpConnectionInput, McpConnection, McpConnectionStatus } from "./types";
 
 const STORAGE_KEY = "agentstudio:mcp";
 
@@ -109,4 +109,17 @@ export function testConnection(id: string): Promise<McpConnection> {
       resolve(updated);
     }, delay);
   });
+}
+
+/** Sets a connection's status (e.g. "connected", "disconnected", "error"). */
+export function setConnectionStatus(
+  id: string,
+  status: McpConnectionStatus,
+): McpConnection | null {
+  return update(id, { status });
+}
+
+/** Disconnects a connection by setting its status to "disconnected". */
+export function disconnectConnection(id: string): McpConnection | null {
+  return setConnectionStatus(id, "disconnected");
 }

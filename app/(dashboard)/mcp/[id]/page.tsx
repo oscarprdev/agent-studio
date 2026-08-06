@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { getById, update, remove } from "@/lib/mcp/store"
+import { getById, update, remove, disconnectConnection } from "@/lib/mcp/store"
 import type { McpConnection } from "@/lib/mcp/types"
 import { McpDetail } from "@/components/mcp/McpDetail"
 import { TopBar } from "@/components/layout/top-bar"
@@ -41,6 +41,11 @@ export default function McpDetailPage() {
     router.push("/mcp")
   }
 
+  async function handleDisconnect() {
+    disconnectConnection(connection!.id)
+    setConnection((prev) => (prev ? { ...prev, status: "disconnected" } : null))
+  }
+
   return (
     <>
       <TopBar title={connection.name || "MCP Connection"} />
@@ -50,6 +55,7 @@ export default function McpDetailPage() {
             connection={connection}
             onSave={handleSave}
             onDelete={handleDelete}
+            onDisconnect={handleDisconnect}
           />
         </div>
       </div>

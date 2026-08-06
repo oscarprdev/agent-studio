@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { getAll, remove } from "@/lib/mcp/store"
+import { getAll, remove, disconnectConnection } from "@/lib/mcp/store"
 import type { McpConnection } from "@/lib/mcp/types"
 import { McpCard } from "@/components/mcp/McpCard"
 import { McpAddSheet } from "@/components/mcp/McpAddSheet"
@@ -43,6 +43,11 @@ export default function McpConnectionsPage() {
     setConnections(getAll() ?? [])
   }
 
+  function disconnectConnectionById(id: string) {
+    disconnectConnection(id)
+    setConnections(getAll() ?? [])
+  }
+
   if (!mounted) return null
 
   return (
@@ -79,6 +84,7 @@ export default function McpConnectionsPage() {
                 key={connection.id}
                 connection={connection}
                 onDelete={deleteConnection}
+                onDisconnect={disconnectConnectionById}
               />
             ))}
           </div>
