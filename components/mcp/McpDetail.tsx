@@ -27,19 +27,22 @@ import {
 import { McpStatusBadge } from "./McpStatusBadge"
 import { getServerIcon, getServerDefinition } from "@/lib/mcp/servers"
 import { testConnection } from "@/lib/mcp/store"
+import { toast } from "@/components/ui/toast"
 import type { McpConnection } from "@/lib/mcp/types"
 
 interface McpDetailProps {
   connection: McpConnection
   onSave: (config: Record<string, string>) => Promise<void> | void
   onDelete: () => Promise<void> | void
+  onDisconnect: () => Promise<void> | void
 }
 
-export function McpDetail({ connection, onSave, onDelete }: McpDetailProps) {
+export function McpDetail({ connection, onSave, onDelete, onDisconnect }: McpDetailProps) {
   const [config, setConfig] = useState<Record<string, string>>(() => ({ ...connection.config }))
   const [isSaving, setIsSaving] = useState(false)
   const [isTesting, setIsTesting] = useState(false)
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [showDisconnectDialog, setShowDisconnectDialog] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
 
   const server = getServerDefinition(connection.type)
@@ -66,6 +69,11 @@ export function McpDetail({ connection, onSave, onDelete }: McpDetailProps) {
     setIsTesting(true)
     try {
       await testConnection(connection.id)
+      toast.add({
+        title: `Connection test succeeded`,
+        description: `${connection.name} is reachable.`,
+        type: "success",
+      })
     } catch {
       setServerError("Connection test failed.")
     } finally {
@@ -76,6 +84,19 @@ export function McpDetail({ connection, onSave, onDelete }: McpDetailProps) {
   async function handleDelete() {
     setShowConfirmDialog(false)
     await onDelete()
+  }
+
+  async function handleDisconnect() {
+    setShowDisconnectDialog(false)
+    try {
+      await onDisconnect()
+      toast.add({
+        title: `${connection.name} disconnected`,
+        type: "info",
+      })
+    } catch {
+      setServerError("Failed to disconnect.")
+    }
   }
 
   return (
@@ -131,7 +152,7 @@ export function McpDetail({ connection, onSave, onDelete }: McpDetailProps) {
           </FieldGroup>
         </CardContent>
 
-        <CardFooter className="gap-2">
+        <CardFooter className="flex-wrap gap-2">
           <Button
             variant="outline"
             onClick={handleTest}
@@ -144,21 +165,44 @@ export function McpDetail({ connection, onSave, onDelete }: McpDetailProps) {
             {isSaving && <Spinner data-icon="inline-start" />}
             {isSaving ? "Saving..." : "Save Changes"}
           </Button>
-          <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-            <AlertDialogTrigger className="inline-flex items-center justify-center rounded-lg border border-transparent bg-destructive text-sm font-medium text-destructive-foreground hover:bg-destructive/80 transition-all outline-none cursor-pointer disabled:opacity-50 disabled:pointer-events-none select-none">
-              Disconnect
+          <AlertDialog open={showDisconnectDialog} onOpenChange={setShowDisconnectDialog}>
+            <AlertDialogTrigger>
+              <Button variant="outline" disabled={isTesting || isSaving || connection.status === "disconnected"}>
+                Disconnect
+              </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Disconnect from {connection.name}?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will remove the connection configuration. This action cannot be undone.
+                  The connection will be set to disconnected. Configuration will be preserved.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDisconnect}>
+                  Disconnect
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+            <AlertDialogTrigger>
+              <Button variant="destructive" disabled={isTesting || isSaving}>
+                Delete
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete {connection.name}?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently remove the connection and its configuration. This action cannot be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction onClick={handleDelete}>
-                  Disconnect
+                  Delete
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
