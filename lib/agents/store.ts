@@ -195,8 +195,8 @@ export function remove(id: string): boolean {
     const agents = readAll();
     const filtered = agents.filter((a) => a.id !== id);
     if (filtered.length === agents.length) return false;
-    persist(filtered);
     cleanupAgentVersions(id);
+    persist(filtered);
     return true;
   } catch {
     return false;
@@ -560,7 +560,5 @@ export function cleanupAgentVersions(agentId: string): void {
   if (!agentId || typeof agentId !== "string" || agentId.trim() === "") return;
   if (!isBrowser()) return;
 
-  if (getAgent(agentId) != null) {
-    localStorage.removeItem(versionKey(agentId));
-  }
+  localStorage.removeItem(versionKey(agentId));
 }
