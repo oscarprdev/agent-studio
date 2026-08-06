@@ -11,7 +11,7 @@ import { PromptOutput } from "@/components/prompt/PromptOutput"
 import * as store from "@/lib/prompts/store"
 import type { Prompt } from "@/lib/prompts/types"
 
-interface PromptEditorProps {
+export interface PromptEditorProps {
   prompt: Prompt | null
   onSave?: (prompt: Prompt) => void
 }
