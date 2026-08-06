@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import {
   FieldGroup,
   Field,
@@ -22,6 +23,7 @@ interface AgentEditorProps {
 }
 
 export function AgentEditor({ agent, onSave }: AgentEditorProps) {
+  const router = useRouter()
   const [name, setName] = useState(agent.name)
   const [description, setDescription] = useState(agent.description)
   const [systemPrompt, setSystemPrompt] = useState(agent.system_prompt)
@@ -39,6 +41,60 @@ export function AgentEditor({ agent, onSave }: AgentEditorProps) {
     if (updated) {
       onSave(updated)
     }
+  }
+
+  function handleDuplicate() {
+    store.create({
+      name: `${agent.name} (Copy)`,
+      description: agent.description,
+      model: agent.model,
+      system_prompt: agent.system_prompt,
+      skills: agent.skills,
+      tools: agent.tools,
+    })
+    router.push("/agents")
+  }
+
+  function handleExportMarkdown() {
+    const md = [
+      `# ${name}`,
+      ``,
+      `## Description`,
+      ``,
+      description,
+      ``,
+      `## Model`,
+      ``,
+      agent.model,
+      ``,
+      `## System Prompt`,
+      ``,
+      systemPrompt,
+      ``,
+      `## Tools`,
+      ``,
+      agent.tools.length > 0
+        ? agent.tools.map((t) => `- ${t.id}: ${t.name} — ${t.description}`).join("\n")
+        : "_None_",
+      ``,
+      `## Skills`,
+      ``,
+      agent.skills.length > 0
+        ? agent.skills.map((s) => `- ${s.name}: ${s.description}`).join("\n")
+        : "_None_",
+      ``,
+      `> Created: ${agent.createdAt}`,
+    ].join("\n")
+
+    const blob = new Blob([md], { type: "text/markdown" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `${name.replace(/[^a-z0-9]/gi, "-").toLowerCase()}.md`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
   }
 
   return (
@@ -147,9 +203,17 @@ export function AgentEditor({ agent, onSave }: AgentEditorProps) {
             </div>
           )}
 
-          <Button onClick={handleSave} disabled={!isValid} size="lg">
-            Save Changes
-          </Button>
+          <div className="flex items-center gap-2 pt-2">
+            <Button onClick={handleSave} disabled={!isValid} size="lg">
+              Save Changes
+            </Button>
+            <Button variant="outline" onClick={handleDuplicate} size="lg">
+              Duplicate
+            </Button>
+            <Button variant="outline" onClick={handleExportMarkdown} size="lg">
+              Export Markdown
+            </Button>
+          </div>
         </>
       )}
     </div>

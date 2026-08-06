@@ -1,11 +1,15 @@
+"use client"
+
+import { useState } from "react"
 import Link from "next/link"
 import { Bot, Wrench, MessageSquare, Plus } from "lucide-react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { TopBar } from "@/components/layout/top-bar"
+import { getAll } from "@/lib/agents/store"
 
-const stats = [
-  { label: "Agents", count: 0, icon: Bot, href: "/agents" },
+const baseStats = [
+  { label: "Agents", icon: Bot, href: "/agents" },
   { label: "Skills", count: 0, icon: Wrench, href: "/skills" },
   { label: "Prompts", count: 0, icon: MessageSquare, href: "/prompts" },
 ]
@@ -17,6 +21,12 @@ const quickActions = [
 ]
 
 export default function DashboardPage() {
+  const [stats] = useState(() =>
+    baseStats.map((s) =>
+      s.label === "Agents" ? { ...s, count: getAll().length } : s
+    )
+  )
+
   return (
     <>
       <TopBar title="Dashboard" />
