@@ -91,6 +91,7 @@ export function AgentToolsTab({
                   <Button
                     variant="ghost"
                     size="icon-xs"
+                    aria-label={`Remove ${tool.name}`}
                     onClick={() => handleRemoveTool(tool.id)}
                   >
                     <Trash2Icon data-icon="inline-end" />

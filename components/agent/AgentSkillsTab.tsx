@@ -102,6 +102,7 @@ export function AgentSkillsTab({
                   <Button
                     variant="ghost"
                     size="icon-xs"
+                    aria-label={`Remove ${skill.name}`}
                     onClick={() => handleRemoveSkill(skill.id)}
                   >
                     <Trash2Icon data-icon="inline-end" />
