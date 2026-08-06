@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
+import { FieldGroup, Field, FieldLabel, FieldDescription } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
@@ -19,7 +19,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { SkillOutput } from "@/components/skill/SkillOutput"
 import * as store from "@/lib/skills/store"
 import type { Skill } from "@/lib/skills/types"
 
@@ -47,31 +46,15 @@ function exportSkillAsMarkdown(skill: Skill): void {
   sections.push("")
   sections.push("## Instructions")
   sections.push("")
-  sections.push(skill.content.instructions)
-  sections.push("")
-  sections.push("## Triggers")
-  sections.push("")
-  if (skill.content.triggers.length > 0) {
-    skill.content.triggers.forEach((t) => sections.push(`- ${t}`))
-  } else {
-    sections.push("- Not specified")
-  }
+  sections.push(skill.instructions)
   sections.push("")
   sections.push("## Tools")
   sections.push("")
-  if (skill.content.tools.length > 0) {
-    skill.content.tools.forEach((t) => sections.push(`- ${t}`))
+  if (skill.tools.length > 0) {
+    skill.tools.forEach((t) => sections.push(`- ${t}`))
   } else {
     sections.push("- Not specified")
   }
-  sections.push("")
-  sections.push("## Expected Output")
-  sections.push("")
-  sections.push(skill.content.expectedOutput)
-  sections.push("")
-  sections.push("## Rules")
-  sections.push("")
-  sections.push(skill.content.rules)
   sections.push("")
   sections.push("---")
   sections.push("")
@@ -97,12 +80,23 @@ export function SkillEditor({
   const router = useRouter()
   const [name, setName] = useState(skill?.name ?? "")
   const [description, setDescription] = useState(skill?.description ?? "")
+  const [instructions, setInstructions] = useState(skill?.instructions ?? "")
+  const [toolsRaw, setToolsRaw] = useState(skill?.tools.join(", ") ?? "")
 
   function handleSave() {
     if (!skill) return
 
     try {
-      const updated = store.update(skill.id, { name, description })
+      const tools = toolsRaw
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0)
+      const updated = store.update(skill.id, {
+        name,
+        description,
+        instructions,
+        tools,
+      })
       if (updated) {
         toast.add({ title: "Skill saved", type: "success" })
         onSave?.(updated)
@@ -190,9 +184,56 @@ export function SkillEditor({
             onChange={(e) => setDescription(e.target.value)}
           />
         </Field>
+        <Field>
+          <FieldLabel htmlFor="skill-instructions">Instructions</FieldLabel>
+          <Textarea
+            id="skill-instructions"
+            value={instructions}
+            onChange={(e) => setInstructions(e.target.value)}
+            rows={6}
+            className="font-mono"
+          />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="skill-tools">Tools</FieldLabel>
+          <Textarea
+            id="skill-tools"
+            value={toolsRaw}
+            onChange={(e) => setToolsRaw(e.target.value)}
+            rows={3}
+            placeholder="GitHub, Linear, Slack"
+          />
+          <FieldDescription>Comma-separated tool names</FieldDescription>
+        </Field>
       </FieldGroup>
 
-      <SkillOutput content={skill.content} />
+      <div className="rounded-md border p-4 flex flex-col gap-4">
+        <section className="flex flex-col gap-1">
+          <h4 className="text-sm font-medium text-muted-foreground">DESCRIPTION</h4>
+          <p>{skill.description || "—"}</p>
+        </section>
+        <section className="flex flex-col gap-1">
+          <h4 className="text-sm font-medium text-muted-foreground">INSTRUCTIONS</h4>
+          <p className="whitespace-pre-wrap text-sm">{skill.instructions || "—"}</p>
+        </section>
+        <section className="flex flex-col gap-1">
+          <h4 className="text-sm font-medium text-muted-foreground">TOOLS</h4>
+          <div className="flex flex-wrap gap-1">
+            {skill.tools.length > 0 ? (
+              skill.tools.map((tool) => (
+                <span
+                  key={tool}
+                  className="rounded-md bg-secondary px-2 py-0.5 text-xs"
+                >
+                  {tool}
+                </span>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">Not specified</p>
+            )}
+          </div>
+        </section>
+      </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <Button onClick={handleSave}>Save Changes</Button>
