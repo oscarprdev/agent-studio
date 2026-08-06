@@ -40,7 +40,7 @@ export function VersionHistory({
   const effectiveVersions = getVersionHistory()
   const selectedItem = effectiveVersions.find(
     (v) => v.id === selectedId
-  ) ?? selectedVersion ?? null
+  ) ?? null
 
   function handleSelect(version: PromptVersion) {
     setSelectedId(version.id)

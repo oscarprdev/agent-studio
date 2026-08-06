@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState, useCallback } from "react"
+import { useEffect, useRef, useState, useCallback, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
@@ -24,7 +24,6 @@ interface PromptEditorProps {
 export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
   const router = useRouter()
 
-  // Initialize draft from prompt on mount
   const initialTitle = prompt?.title ?? ""
   const initialMarkdown = prompt?.content
     ? sectionsToMarkdown(prompt.content)
@@ -38,20 +37,18 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
   const [showTest, setShowTest] = useState(false)
   const [compareLeft, setCompareLeft] = useState<PromptVersion | null>(null)
   const [compareRight, setCompareRight] = useState<PromptVersion | null>(null)
+  const [compareDiff, setCompareDiff] = useState<ReturnType<typeof comparePromptVersions> | null>(null)
 
   const promptId = prompt?.id ?? ""
   const draftTitleRef = useRef(draftTitle)
   const draftMarkdownRef = useRef(draftMarkdown)
-
   const initialTitleRef = useRef(initialTitle)
   const initialMarkdownRef = useRef(initialMarkdown)
   const saveDirtyRef = useRef(false)
 
-  // Keep refs in sync with state
   draftTitleRef.current = draftTitle
   draftMarkdownRef.current = draftMarkdown
 
-  // Load versions on mount
   useEffect(() => {
     if (!promptId) return
     try {
@@ -61,11 +58,9 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
     }
   }, [promptId])
 
-  // Save handler
   const handleSave = useCallback(() => {
     if (!prompt || !promptId) return
 
-    // Skip if nothing changed (use refs for stale-safety)
     if (
       draftTitleRef.current === initialTitleRef.current &&
       draftMarkdownRef.current === initialMarkdownRef.current
@@ -76,18 +71,15 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
     setIsSaving(true)
 
     try {
-      // Parse markdown → PromptSections
       const { role, objective, tools, workflow, rules, output } =
         markdownToSections(draftMarkdownRef.current)
 
-      // Update prompt (title + content)
       const updated = store.update(promptId, {
         title: draftTitleRef.current,
         content: { role, objective, tools, workflow, rules, output },
       })
 
       if (updated) {
-        // Save version (skip if identical to latest version)
         const latestVersion = versions[0] ?? null
         const hasDiff =
           !latestVersion ||
@@ -103,20 +95,18 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
               { role, objective, tools, workflow, rules, output }
             )
           } catch {
-            // version save failure — prompt is already saved
+            // version save failure
           }
         }
 
-        // Refresh version list
         try {
           setVersions(store.getVersionHistory(promptId))
         } catch {
           // ignore
         }
 
-        // Persist initial state for dirty check
-        initialTitleRef.current = draftTitle
-        initialMarkdownRef.current = draftMarkdown
+        initialTitleRef.current = draftTitleRef.current
+        initialMarkdownRef.current = draftMarkdownRef.current
         saveDirtyRef.current = false
 
         toast.add({ title: "Prompt saved", type: "success" })
@@ -129,9 +119,8 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
     } finally {
       setIsSaving(false)
     }
-  }, [prompt, promptId, draftTitle, draftMarkdown, versions, onSave])
+  }, [prompt, promptId, versions, onSave])
 
-  // Keyboard shortcut: Cmd/Ctrl+S
   useEffect(() => {
     function onKeydown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "s") {
@@ -143,7 +132,6 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
     return () => window.removeEventListener("keydown", onKeydown)
   }, [handleSave])
 
-  // Auto-save every 30 seconds if dirty (uses refs to avoid stale closure)
   useEffect(() => {
     const interval = setInterval(() => {
       if (saveDirtyRef.current && !isSaving) {
@@ -155,28 +143,25 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
     return () => clearInterval(interval)
   }, [handleSave, isSaving])
 
-  // Restore version handler
   function handleRestore(version: PromptVersion) {
-    // Overwrite current draft with version content
     setDraftTitle(version.title)
     setDraftMarkdown(version.markdown)
     setShowHistory(false)
 
-    // Save as new version (restore creates snapshot)
     try {
-      store.savePromptVersion(
-        promptId,
-        version.title,
-        version.markdown,
-        version.content
-      )
-      try {
-        setVersions(store.getVersionHistory(promptId))
-      } catch {
-        // ignore
+      const updated = store.restorePromptVersion(promptId, version.id)
+      if (updated) {
+        try {
+          setVersions(store.getVersionHistory(promptId))
+        } catch {
+          // ignore
+        }
+        initialTitleRef.current = updated.title
+        initialMarkdownRef.current = version.markdown
+        saveDirtyRef.current = false
       }
     } catch {
-      // ignore version save failure
+      // ignore version restore failure
     }
 
     toast.add({ title: "Version restored", type: "success" })
@@ -196,20 +181,15 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
     router.push(`/skills/new?${params.toString()}`)
   }
 
-  // Compare handler
   function handleShowCompare() {
     if (!promptId || versions.length < 2) return
-    // Use the two most recent versions
     const left = versions[1] ?? null
     const right = versions[0] ?? null
     if (!left || !right) return
 
-    try {
-      setCompareLeft(left)
-      setCompareRight(right)
-    } catch {
-      // ignore compare errors
-    }
+    setCompareLeft(left)
+    setCompareRight(right)
+    setCompareDiff(comparePromptVersions(left, right))
   }
 
   if (!prompt) {
@@ -225,7 +205,6 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
 
   return (
     <div className="flex flex-col gap-0">
-      {/* Top bar: title input, Save, Test, History */}
       <div className="flex flex-col gap-4 border-b p-4">
         <FieldGroup>
           <Field>
@@ -242,9 +221,7 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
         </FieldGroup>
       </div>
 
-      {/* Split pane: Editor (left) | Preview (right) */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Markdown textarea editor */}
         <div className="flex-1 overflow-auto">
           <textarea
             value={draftMarkdown}
@@ -258,16 +235,13 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
           />
         </div>
 
-        {/* Separator */}
         <div className="w-px shrink-0 bg-border" />
 
-        {/* Live preview */}
         <div className="flex-1 overflow-auto border-l">
           <PromptPreview content={draftMarkdown} />
         </div>
       </div>
 
-      {/* Bottom bar */}
       <div className="flex flex-col gap-3 border-t bg-muted/40 p-4 sm:flex-row sm:flex-wrap">
         <Button
           onClick={handleSave}
@@ -296,7 +270,6 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
         </div>
       </div>
 
-      {/* Version History Sheet */}
       <VersionHistory
         promptId={promptId}
         isOpen={showHistory}
@@ -304,22 +277,21 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
         onRestore={handleRestore}
       />
 
-      {/* Test Panel Sheet */}
       <TestPanel
         isOpen={showTest}
         onClose={() => setShowTest(false)}
         currentMarkdown={draftMarkdown}
       />
 
-      {/* Version Compare (inline below split pane) */}
-      {compareLeft && compareRight && (
+      {compareLeft && compareRight && compareDiff && (
         <VersionCompare
           left={compareLeft}
           right={compareRight}
-          diff={comparePromptVersions(compareLeft, compareRight)}
+          diff={compareDiff}
           onClose={() => {
             setCompareLeft(null)
             setCompareRight(null)
+            setCompareDiff(null)
           }}
         />
       )}

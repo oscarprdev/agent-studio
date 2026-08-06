@@ -7,6 +7,8 @@ import type { Prompt } from "@/lib/prompts/types"
 import { PromptCard } from "@/components/prompt/PromptCard"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/toast"
+import { WandSparklesIcon } from "lucide-react"
+import { useRouter } from "next/navigation"
 import {
   Empty,
   EmptyHeader,
@@ -18,6 +20,7 @@ import { TopBar } from "@/components/layout/top-bar"
 
 export default function PromptsPage() {
   const [prompts, setPrompts] = useState<Prompt[]>(() => getAll() ?? [])
+  const router = useRouter()
 
   useEffect(() => {
     function handleVisibility() {
@@ -44,13 +47,51 @@ export default function PromptsPage() {
     }
   }
 
+  function handleNewPrompt() {
+    const now = new Date().toISOString()
+    const newPrompt = {
+      id: crypto.randomUUID(),
+      title: "Untitled Prompt",
+      version: 0,
+      tags: [],
+      input: "",
+      content: {
+        role: "",
+        objective: "",
+        tools: [],
+        workflow: [],
+        rules: "",
+        output: "",
+      },
+      createdAt: now,
+      updatedAt: now,
+    }
+
+    try {
+      const prompts = getAll()
+      prompts.push(newPrompt)
+      localStorage.setItem("agentstudio:prompts", JSON.stringify(prompts))
+      setPrompts(getAll())
+      router.push(`/prompts/${newPrompt.id}/editor`)
+    } catch {
+      toast.add({ title: "Failed to create prompt", type: "error" })
+    }
+  }
+
+  function handleEdit(id: string) {
+    router.push(`/prompts/${id}/editor`)
+  }
+
   return (
     <>
       <TopBar title="Prompts" />
       <div className="flex flex-1 flex-col gap-6 p-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold tracking-tight">My Prompts</h1>
-          <Button render={<Link href="/prompts/new" />} nativeButton={false}>New Prompt</Button>
+          <Button onClick={handleNewPrompt} nativeButton={false}>
+            <WandSparklesIcon className="size-4" data-icon="inline-start" />
+            New Prompt
+          </Button>
         </div>
 
         {prompts.length === 0 ? (
@@ -62,13 +103,15 @@ export default function PromptsPage() {
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <Button render={<Link href="/prompts/new" />} nativeButton={false}>New Prompt</Button>
+              <Button onClick={handleNewPrompt} nativeButton={false}>
+                New Prompt
+              </Button>
             </EmptyContent>
           </Empty>
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {prompts.map((prompt) => (
-              <PromptCard key={prompt.id} prompt={prompt} onDelete={handleDelete} />
+              <PromptCard key={prompt.id} prompt={prompt} onEdit={handleEdit} onDelete={handleDelete} />
             ))}
           </div>
         )}

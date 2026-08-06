@@ -1,36 +1,14 @@
 "use client"
 
-import Link from "next/link"
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import type { Prompt } from "@/lib/prompts/types"
 
 interface PromptCardProps {
   prompt: Prompt
+  onEdit?: (id: string) => void
   onDelete?: (id: string) => void
-}
-
-function truncate(text: string, maxLength: number): string {
-  if (text.length <= maxLength) return text
-  return text.slice(0, maxLength).trimEnd() + "…"
 }
 
 function formatDate(iso: string): string {
@@ -41,12 +19,12 @@ function formatDate(iso: string): string {
   })
 }
 
-export function PromptCard({ prompt, onDelete }: PromptCardProps) {
+export function PromptCard({ prompt, onEdit, onDelete }: PromptCardProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle className="truncate" title={prompt.title}>
-          {truncate(prompt.title, 60)}
+          {prompt.title}
         </CardTitle>
         <Badge variant="secondary" className="w-fit text-xs">
           {formatDate(prompt.createdAt)}
@@ -55,42 +33,27 @@ export function PromptCard({ prompt, onDelete }: PromptCardProps) {
 
       <CardContent>
         <p className="line-clamp-2 text-muted-foreground">
-          {truncate(prompt.input, 120)}
+          Prompt content preview
         </p>
       </CardContent>
 
       <CardFooter className="gap-2">
-        <Button variant="outline" size="sm" render={<Link href={`/prompts/${prompt.id}`} />} nativeButton={false}>
-          View
-        </Button>
+        {onEdit && (
+          <Button variant="outline" size="sm" onClick={() => onEdit(prompt.id)}>
+            Edit
+          </Button>
+        )}
         {onDelete && (
-          <AlertDialog>
-            <AlertDialogTrigger
-              render={
-                <Button variant="destructive" size="sm" />
+          <button
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors h-8 px-3 bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            onClick={(e) => {
+              if (confirm(`Delete "${prompt.title}"?`)) {
+                onDelete(prompt.id)
               }
-            >
-              Delete
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete prompt</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Are you sure you want to delete &quot;{prompt.title}&quot;? This
-                  action cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  variant="destructive"
-                  onClick={() => onDelete(prompt.id)}
-                >
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+            }}
+          >
+            Delete
+          </button>
         )}
       </CardFooter>
     </Card>

@@ -12,13 +12,15 @@ export interface PromptSections {
 export interface Prompt {
   id: string;
   title: string;
+  version?: number;
+  tags: string[];
   input: string;
   content: PromptSections;
   createdAt: string;
   updatedAt: string;
 }
 
-export type CreatePromptInput = Pick<Prompt, "title" | "input" | "content">;
+export type CreatePromptInput = Pick<Prompt, "title" | "input" | "content" | "version" | "tags">;
 
 export interface PromptVersion {
   id: string;

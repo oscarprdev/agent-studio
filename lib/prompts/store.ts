@@ -4,6 +4,7 @@ import {
   getPromptVersions,
   restorePromptVersion as restorePromptVersionVersions,
   savePromptVersion as savePromptVersionVersions,
+  cleanPromptVersions,
 } from "./versions";
 
 const STORAGE_KEY = "agentstudio:prompts";
@@ -23,22 +24,21 @@ function persist(prompts: Prompt[]): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(prompts));
 }
 
-/** Returns all saved prompts, or an empty array on missing/invalid localStorage. */
 export function getAll(): Prompt[] {
   return readAll();
 }
 
-/** Returns a prompt by ID, or null if not found. */
 export function getById(id: string): Prompt | null {
   return readAll().find((p) => p.id === id) ?? null;
 }
 
-/** Creates a new prompt with auto-generated UUID and timestamps. */
 export function create(input: CreatePromptInput): Prompt {
   const now = new Date().toISOString();
   const prompt: Prompt = {
     id: crypto.randomUUID(),
     title: input.title,
+    version: input.version ?? 0,
+    tags: input.tags ?? [],
     input: input.input,
     content: input.content,
     createdAt: now,
@@ -50,13 +50,12 @@ export function create(input: CreatePromptInput): Prompt {
     prompts.push(prompt);
     persist(prompts);
   } catch {
-    // Prompt returned even if localStorage fails — caller gets the object
+    // Prompt returned even if localStorage fails
   }
 
   return prompt;
 }
 
-/** Updates an existing prompt by ID. Returns the updated prompt, or null if not found. */
 export function update(id: string, updates: Partial<Prompt>): Prompt | null {
   try {
     const prompts = readAll();
@@ -78,44 +77,27 @@ export function update(id: string, updates: Partial<Prompt>): Prompt | null {
   }
 }
 
-/** Removes a prompt by ID. Returns true if removed, false if not found. */
 export function remove(id: string): boolean {
   try {
     const prompts = readAll();
     const filtered = prompts.filter((p) => p.id !== id);
     if (filtered.length === prompts.length) return false;
     persist(filtered);
+    cleanPromptVersions(id);
     return true;
   } catch {
     return false;
   }
 }
 
-// ── Version storage delegates ─────────────────────────────────────────────────
-
-/**
- * Read all version records for a prompt.
- * Malformed entries are silently skipped.
- */
 export function getVersionHistory(promptId: string): PromptVersion[] {
   return getPromptVersions(promptId);
 }
 
-/**
- * Read a single version record by ID.
- */
 export function getVersion(promptId: string, versionId: string): PromptVersion | null {
   return getPromptVersion(promptId, versionId);
 }
 
-/**
- * Save a new version snapshot for a prompt.
- *
- * Derives the monotonically increasing version number from existing
- * versions, creates the snapshot, prunes to 50 versions max, and
- * persists to localStorage. Delegates to versions.ts (no circular
- * — versions.ts does NOT import from store.ts).
- */
 export function savePromptVersion(
   promptId: string,
   title: string,
@@ -131,10 +113,6 @@ export function savePromptVersion(
   return savePromptVersionVersions(promptId, nextVersion, title, markdown, content);
 }
 
-/**
- * Restore a version by updating the canonical prompt and creating
- * an auditable new version entry.
- */
 export function restorePromptVersion(
   promptId: string,
   versionId: string
