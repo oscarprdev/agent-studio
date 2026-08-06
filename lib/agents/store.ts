@@ -211,11 +211,11 @@ export function duplicateAgent(id: string): Agent | null {
 
     const clone: Agent = {
       id: uuid,
-      name: `${source.name} (Copy)`,
+      name: `Copy of ${source.name}`,
       description: source.description,
       model: source.model,
       system_prompt: source.system_prompt,
-        skills: [...(source.skills ?? [])],
+      skills: [...(source.skills ?? [])],
       tools: [...(source.tools ?? [])],
       version: source.version,
       createdAt: now,

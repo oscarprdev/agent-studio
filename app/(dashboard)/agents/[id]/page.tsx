@@ -4,7 +4,6 @@ import { useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import * as store from "@/lib/agents/store"
-import { getById } from "@/lib/agents/store"
 import type { Agent, AgentDefinition } from "@/lib/agents/types"
 import { Button } from "@/components/ui/button"
 import { TopBar } from "@/components/layout/top-bar"
@@ -136,7 +135,7 @@ export default function AgentDetailPage() {
 
   function handleExportJson() {
     downloadFile(
-      JSON.stringify(resolvedAgent, null, 2),
+      JSON.stringify({ ...draft, version: resolvedAgent.version, createdAt: resolvedAgent.createdAt, updatedAt: resolvedAgent.updatedAt }, null, 2),
       `${sanitizeFilename(resolvedAgent.name)}.json`,
       "application/json",
     )
@@ -167,8 +166,10 @@ export default function AgentDetailPage() {
             Duplicate
           </Button>
           <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-            <AlertDialogTrigger render={<Button variant="outline" size="lg" />}>
-              Delete
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" size="lg">
+                Delete
+              </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
