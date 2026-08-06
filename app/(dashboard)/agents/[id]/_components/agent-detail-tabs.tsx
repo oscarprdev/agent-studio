@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { TabsRoot, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { AgentOverviewTab } from "@/components/agent/AgentOverviewTab"
 import { AgentConfigurationTab } from "@/components/agent/AgentConfigurationTab"
@@ -10,18 +9,11 @@ import type { Agent, AgentDefinition } from "@/lib/agents/types"
 
 type AgentDetailTabsProps = {
   agent: Agent
+  draft: AgentDefinition
+  onChange: (draft: AgentDefinition) => void
 }
 
-export function AgentDetailTabs({ agent }: AgentDetailTabsProps) {
-  const [draft, setDraft] = useState<AgentDefinition>({
-    name: agent.name,
-    description: agent.description,
-    model: agent.model,
-    system_prompt: agent.system_prompt,
-    skills: agent.skills,
-    tools: agent.tools,
-  })
-
+export function AgentDetailTabs({ agent, draft, onChange }: AgentDetailTabsProps) {
   return (
     <TabsRoot defaultValue="overview">
       <TabsList>
@@ -34,13 +26,13 @@ export function AgentDetailTabs({ agent }: AgentDetailTabsProps) {
         <AgentOverviewTab agent={agent} draft={draft} />
       </TabsContent>
       <TabsContent value="configuration">
-        <AgentConfigurationTab agent={agent} onChange={setDraft} />
+        <AgentConfigurationTab agent={agent} onChange={onChange} />
       </TabsContent>
       <TabsContent value="skills">
-        <AgentSkillsTab agent={agent} draft={draft} onChange={setDraft} />
+        <AgentSkillsTab agent={agent} draft={draft} onChange={onChange} />
       </TabsContent>
       <TabsContent value="tools">
-        <AgentToolsTab agent={agent} draft={draft} onChange={setDraft} />
+        <AgentToolsTab agent={agent} draft={draft} onChange={onChange} />
       </TabsContent>
     </TabsRoot>
   )
