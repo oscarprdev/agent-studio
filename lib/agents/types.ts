@@ -1,17 +1,15 @@
+/* eslint-disable-next-line import/no-restricted-paths -- re-export from canonical skills types */
+import type { CreateSkillInput as C, Skill } from "@/lib/skills/types";
+
+// Re-export so existing code that imports `Skill` or `CreateSkillInput` from this module still compiles.
+export type { Skill, C as CreateSkillInput };
+
 export interface Tool {
   id: string;
   name: string;
   description: string;
   category: string;
   icon?: string;
-}
-
-export interface Skill {
-  id: string;
-  name: string;
-  description: string;
-  instructions: string;
-  tools: string[];
 }
 
 export interface Agent {

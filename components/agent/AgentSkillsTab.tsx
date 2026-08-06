@@ -50,6 +50,9 @@ export function AgentSkillsTab({
       description: trimmedDescription,
       instructions: instructions.trim(),
       tools: [],
+      created_by: "local-user",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     }
 
     // Deduplicate by name within the draft (not by ID, since agent already has skills)
