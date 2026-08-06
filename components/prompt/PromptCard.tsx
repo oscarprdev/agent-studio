@@ -10,6 +10,17 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import type { Prompt } from "@/lib/prompts/types"
 
 interface PromptCardProps {
@@ -53,13 +64,33 @@ export function PromptCard({ prompt, onDelete }: PromptCardProps) {
           View
         </Button>
         {onDelete && (
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => onDelete(prompt.id)}
-          >
-            Delete
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger
+              render={
+                <Button variant="destructive" size="sm" />
+              }
+            >
+              Delete
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete prompt</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete &quot;{prompt.title}&quot;? This
+                  action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  variant="destructive"
+                  onClick={() => onDelete(prompt.id)}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
       </CardFooter>
     </Card>

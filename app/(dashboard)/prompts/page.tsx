@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { getAll } from "@/lib/prompts/store"
+import { getAll, remove } from "@/lib/prompts/store"
 import type { Prompt } from "@/lib/prompts/types"
 import { PromptCard } from "@/components/prompt/PromptCard"
 import { Button } from "@/components/ui/button"
+import { toast } from "@/components/ui/toast"
 import {
   Empty,
   EmptyHeader,
@@ -27,6 +28,21 @@ export default function PromptsPage() {
     document.addEventListener("visibilitychange", handleVisibility)
     return () => document.removeEventListener("visibilitychange", handleVisibility)
   }, [])
+
+  function handleDelete(id: string) {
+    const prompt = prompts.find((p) => p.id === id)
+    try {
+      const removed = remove(id)
+      if (removed) {
+        setPrompts(getAll())
+        toast.add({ title: `Deleted "${prompt?.title ?? "prompt"}"`, type: "success" })
+      } else {
+        toast.add({ title: "Failed to delete prompt", type: "error" })
+      }
+    } catch {
+      toast.add({ title: "Failed to delete prompt", type: "error" })
+    }
+  }
 
   return (
     <>
@@ -52,7 +68,7 @@ export default function PromptsPage() {
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {prompts.map((prompt) => (
-              <PromptCard key={prompt.id} prompt={prompt} />
+              <PromptCard key={prompt.id} prompt={prompt} onDelete={handleDelete} />
             ))}
           </div>
         )}
