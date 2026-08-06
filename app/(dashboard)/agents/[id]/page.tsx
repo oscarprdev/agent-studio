@@ -60,7 +60,7 @@ export default function AgentDetailPage() {
   const params = useParams()
   const router = useRouter()
   const id = params.id as string
-  const [agent, setAgent] = useState<Agent | null>(() => getById(id))
+  const [agent, setAgent] = useState<Agent | null>(() => store.getById(id))
 
   if (!agent) {
     return (
