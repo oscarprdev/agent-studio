@@ -6,7 +6,7 @@ import { Bot, Wrench, MessageSquare, Plus } from "lucide-react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { TopBar } from "@/components/layout/top-bar"
-import { getAll } from "@/lib/agents/store"
+import { listAgents } from "@/lib/agents/store"
 import { useAuth } from "@/lib/auth-context"
 import { getAll as getAllSkills } from "@/lib/skills/store"
 import { getAll as getAllPrompts } from "@/lib/prompts/store"
@@ -27,7 +27,7 @@ export default function DashboardPage() {
   const { workspace } = useAuth()
   const [stats] = useState(() =>
     baseStats.map((s) => {
-      if (s.label === "Agents") return { ...s, count: getAll().length }
+      if (s.label === "Agents") return { ...s, count: listAgents().length }
       if (s.label === "Skills") return { ...s, count: getAllSkills().length }
       if (s.label === "Prompts") return { ...s, count: getAllPrompts().length }
       return { ...s, count: 0 }
