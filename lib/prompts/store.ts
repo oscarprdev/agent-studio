@@ -1,4 +1,10 @@
-import type { CreatePromptInput, Prompt } from "./types";
+import type { CreatePromptInput, Prompt, PromptSections, PromptVersion } from "./types";
+import {
+  getPromptVersion,
+  getPromptVersions,
+  restorePromptVersion as restorePromptVersionVersions,
+  savePromptVersion as savePromptVersionVersions,
+} from "./versions";
 
 const STORAGE_KEY = "agentstudio:prompts";
 
@@ -83,4 +89,63 @@ export function remove(id: string): boolean {
   } catch {
     return false;
   }
+}
+
+// ── Version storage delegates ─────────────────────────────────────────────────
+
+/**
+ * Read all version records for a prompt.
+ * Malformed entries are silently skipped.
+ */
+export function getVersionHistory(promptId: string): PromptVersion[] {
+  return getPromptVersions(promptId);
+}
+
+/**
+ * Read a single version record by ID.
+ */
+export function getVersion(promptId: string, versionId: string): PromptVersion | null {
+  return getPromptVersion(promptId, versionId);
+}
+
+/**
+ * Save a new version snapshot for a prompt.
+ *
+ * Derives the monotonically increasing version number from existing
+ * versions, creates the snapshot, prunes to 50 versions max, and
+ * persists to localStorage. Delegates to versions.ts (no circular
+ * — versions.ts does NOT import from store.ts).
+ */
+export function savePromptVersion(
+  promptId: string,
+  title: string,
+  markdown: string,
+  content: PromptSections
+): PromptVersion | null {
+  const versions = getVersionHistory(promptId);
+  const nextVersion =
+    versions.length > 0
+      ? Math.max(...versions.map((v) => v.version)) + 1
+      : 1;
+
+  return savePromptVersionVersions(promptId, nextVersion, title, markdown, content);
+}
+
+/**
+ * Restore a version by updating the canonical prompt and creating
+ * an auditable new version entry.
+ */
+export function restorePromptVersion(
+  promptId: string,
+  versionId: string
+): Prompt | null {
+  return restorePromptVersionVersions(promptId, versionId, {
+    getCurrPrompt: (id: string) => getById(id),
+    updatePrompt: (id: string, updates: Partial<Prompt>) => update(id, updates),
+    getLatestVersionNumber: (pid: string) => {
+      const versions = getVersionHistory(pid);
+      if (versions.length === 0) return 0;
+      return Math.max(...versions.map((v) => v.version));
+    },
+  });
 }
