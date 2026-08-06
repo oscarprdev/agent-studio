@@ -1,5 +1,7 @@
 "use client"
 
+import { useState } from "react"
+
 import { compareVersion } from "@/lib/agents/version-diff"
 import type { Agent, AgentVersion } from "@/lib/agents/types"
 import { Badge } from "@/components/ui/badge"
@@ -17,6 +19,16 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@/components/ui/alert"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import {
   Empty,
   EmptyDescription,
@@ -223,6 +235,8 @@ export function AgentVersionCompare({
   onOpenChange,
   onRollback,
 }: AgentVersionCompareProps) {
+  const [rollbackOpen, setRollbackOpen] = useState(false)
+
   // When both fields are available, compute the diff
   let comparison = null
   if (version && current) {
@@ -329,8 +343,7 @@ export function AgentVersionCompare({
             <Button
               variant="default"
               onClick={() => {
-                // Confirmation dialog wraps the rollback
-                onRollback(version.versionId)
+                setRollbackOpen(true)
               }}
             >
               Roll Back to {version.versionLabel}
@@ -340,6 +353,33 @@ export function AgentVersionCompare({
             Close
           </Button>
         </DialogFooter>
+
+        {version && (
+          <AlertDialog open={rollbackOpen} onOpenChange={setRollbackOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Roll back to version {version.versionLabel}?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will restore the agent to this version&apos;s
+                  configuration. Current unsaved changes will be lost.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    onRollback?.(version.versionId)
+                    setRollbackOpen(false)
+                  }}
+                >
+                  Roll Back
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
       </DialogContent>
     </Dialog>
   )

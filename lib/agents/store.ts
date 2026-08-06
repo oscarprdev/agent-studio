@@ -195,11 +195,10 @@ export function remove(id: string): boolean {
     const agents = readAll();
     const filtered = agents.filter((a) => a.id !== id);
     if (filtered.length === agents.length) return false;
-    // Clean up versions BEFORE persist so the agent still exists
+// Clean up versions BEFORE persist so the agent still exists
     // when cleanupAgentVersions checks getAgent(agentId)
     cleanupAgentVersions(id);
     persist(filtered);
-    cleanupAgentVersions(id);
     return true;
   } catch {
     return false;
@@ -558,6 +557,7 @@ export function rollbackToVersion(agentId: string, versionId: string): Agent | n
 
 /**
  * Erase version snapshots for an agent (called during agent deletion).
+ * Called before persist() so the agent still exists in storage.
  */
 export function cleanupAgentVersions(agentId: string): void {
   if (!agentId || typeof agentId !== "string" || agentId.trim() === "") return;

@@ -10,12 +10,14 @@ import { TopBar } from "@/components/layout/top-bar"
 import { toast } from "@/components/ui/toast"
 import {
   AlertDialog,
+  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible"
 import { AgentOutput } from "@/components/agent/AgentOutput"
@@ -219,6 +221,11 @@ export default function AgentDetailPage() {
             Duplicate
           </Button>
           <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" size="lg">
+                Delete
+              </Button>
+            </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Delete "{agent.name}"?</AlertDialogTitle>
@@ -229,7 +236,7 @@ export default function AgentDetailPage() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <Button
+                <AlertDialogAction
                   variant="destructive"
                   onClick={() => {
                     handleDelete()
@@ -237,12 +244,9 @@ export default function AgentDetailPage() {
                   }}
                 >
                   Delete
-                </Button>
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
-            <Button variant="outline" size="lg" onClick={() => setDeleteConfirmOpen(true)}>
-              Delete
-            </Button>
           </AlertDialog>
           <Button variant="outline" onClick={handleExportMarkdown} size="lg">
             Export Markdown
@@ -273,7 +277,7 @@ export default function AgentDetailPage() {
         <AgentVersionCompare
           version={selectedVersion}
           current={agent}
-          open={true}
+          open={!!selectedVersion}
           onOpenChange={(open) => {
             if (!open) {
               setSelectedVersion(null)
