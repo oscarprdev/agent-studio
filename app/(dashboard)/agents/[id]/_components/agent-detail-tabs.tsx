@@ -4,6 +4,7 @@ import { useState } from "react"
 import { TabsRoot, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { AgentOverviewTab } from "@/components/agent/AgentOverviewTab"
 import { AgentConfigurationTab } from "@/components/agent/AgentConfigurationTab"
+import { AgentSkillsTab } from "@/components/agent/AgentSkillsTab"
 import type { Agent, AgentDefinition } from "@/lib/agents/types"
 
 type AgentDetailTabsProps = {
@@ -29,13 +30,13 @@ export function AgentDetailTabs({ agent }: AgentDetailTabsProps) {
         <TabsTrigger value="tools">Tools</TabsTrigger>
       </TabsList>
       <TabsContent value="overview">
-        <AgentOverviewTab agent={agent} />
+        <AgentOverviewTab agent={agent} draft={draft} />
       </TabsContent>
       <TabsContent value="configuration">
         <AgentConfigurationTab agent={agent} onChange={setDraft} />
       </TabsContent>
       <TabsContent value="skills">
-        <h2 className="font-heading text-lg">Skills Tab — coming in task 055</h2>
+        <AgentSkillsTab agent={agent} draft={draft} onChange={setDraft} />
       </TabsContent>
       <TabsContent value="tools">
         <h2 className="font-heading text-lg">Tools Tab — coming in task 056</h2>

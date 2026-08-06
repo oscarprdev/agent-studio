@@ -1,7 +1,7 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge"
-import type { Agent } from "@/lib/agents/types"
+import type { Agent, AgentDefinition } from "@/lib/agents/types"
 
 const dateOptions: Intl.DateTimeFormatOptions = {
   year: "numeric",
@@ -17,7 +17,15 @@ function formatDate(value: string): string {
   return d.toLocaleString("en-US", dateOptions)
 }
 
-export function AgentOverviewTab({ agent }: { agent: Agent }) {
+export function AgentOverviewTab({
+  agent,
+  draft,
+}: {
+  agent: Agent
+  draft: AgentDefinition
+}) {
+  const skillsCount = draft.skills.length
+  const toolsCount = draft.tools.length
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -61,14 +69,14 @@ export function AgentOverviewTab({ agent }: { agent: Agent }) {
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
             Skills
           </span>
-          <span className="text-sm">{agent.skills.length}</span>
+          <Badge variant="secondary" className="w-fit">{skillsCount}</Badge>
         </div>
 
         <div className="flex flex-col gap-2">
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
             Tools
           </span>
-          <span className="text-sm">{agent.tools.length}</span>
+          <span className="text-sm">{toolsCount}</span>
         </div>
       </div>
     </div>
