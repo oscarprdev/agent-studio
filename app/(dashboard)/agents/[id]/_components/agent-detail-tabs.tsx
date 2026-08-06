@@ -5,6 +5,7 @@ import { TabsRoot, TabsList, TabsTrigger, TabsContent } from "@/components/ui/ta
 import { AgentOverviewTab } from "@/components/agent/AgentOverviewTab"
 import { AgentConfigurationTab } from "@/components/agent/AgentConfigurationTab"
 import { AgentSkillsTab } from "@/components/agent/AgentSkillsTab"
+import { AgentToolsTab } from "@/components/agent/AgentToolsTab"
 import type { Agent, AgentDefinition } from "@/lib/agents/types"
 
 type AgentDetailTabsProps = {
@@ -39,7 +40,7 @@ export function AgentDetailTabs({ agent }: AgentDetailTabsProps) {
         <AgentSkillsTab agent={agent} draft={draft} onChange={setDraft} />
       </TabsContent>
       <TabsContent value="tools">
-        <h2 className="font-heading text-lg">Tools Tab — coming in task 056</h2>
+        <AgentToolsTab agent={agent} draft={draft} onChange={setDraft} />
       </TabsContent>
     </TabsRoot>
   )
