@@ -5,9 +5,9 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 import { getById } from "@/lib/agents/store"
 import type { Agent } from "@/lib/agents/types"
-import { AgentEditor } from "@/components/agent/AgentEditor"
 import { Button } from "@/components/ui/button"
 import { TopBar } from "@/components/layout/top-bar"
+import { AgentDetailTabs } from "./_components/agent-detail-tabs"
 
 export default function AgentDetailPage() {
   const params = useParams()
@@ -32,7 +32,7 @@ export default function AgentDetailPage() {
     <>
       <TopBar title={agent.name} />
       <div className="flex flex-1 flex-col gap-6 p-6">
-        <AgentEditor key={agent.updatedAt} agent={agent} onSave={setAgent} />
+        <AgentDetailTabs key={agent.updatedAt} agent={agent} />
       </div>
     </>
   )
