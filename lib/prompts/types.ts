@@ -14,6 +14,8 @@ export interface Prompt {
   title: string;
   input: string;
   content: PromptSections;
+  tags: string[];
+  version: string;
   createdAt: string;
   updatedAt: string;
 }

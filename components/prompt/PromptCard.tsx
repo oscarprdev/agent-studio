@@ -48,9 +48,16 @@ export function PromptCard({ prompt, onDelete }: PromptCardProps) {
         <CardTitle className="truncate" title={prompt.title}>
           {truncate(prompt.title, 60)}
         </CardTitle>
-        <Badge variant="secondary" className="w-fit text-xs">
-          {formatDate(prompt.createdAt)}
-        </Badge>
+        <div className="flex flex-wrap gap-1">
+          <Badge variant="secondary" className="w-fit text-xs">
+            {formatDate(prompt.createdAt)}
+          </Badge>
+          {prompt.tags.map((tag) => (
+            <Badge key={tag} variant="outline">
+              {tag}
+            </Badge>
+          ))}
+        </div>
       </CardHeader>
 
       <CardContent>

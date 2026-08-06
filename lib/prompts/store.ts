@@ -2,12 +2,20 @@ import type { CreatePromptInput, Prompt } from "./types";
 
 const STORAGE_KEY = "agentstudio:prompts";
 
+function normalize(p: Prompt): Prompt {
+  const tags: string[] = Array.isArray(p.tags) ? p.tags : [];
+  const version: string = typeof p.version === "string" && p.version.length > 0 ? p.version : "1.0.0";
+  const updatedAt: string = isNaN(new Date(p.updatedAt).getTime()) ? "1970-01-01T00:00:00.000Z" : p.updatedAt;
+  const createdAt: string = isNaN(new Date(p.createdAt).getTime()) ? "1970-01-01T00:00:00.000Z" : p.createdAt;
+  return { ...p, tags, version, updatedAt, createdAt };
+}
+
 function readAll(): Prompt[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed) ? parsed.map(normalize) : [];
   } catch {
     return [];
   }
@@ -19,7 +27,12 @@ function persist(prompts: Prompt[]): void {
 
 /** Returns all saved prompts, or an empty array on missing/invalid localStorage. */
 export function getAll(): Prompt[] {
-  return readAll();
+  const prompts = readAll();
+  return [...prompts].sort((a, b) => {
+    const dateCompare = b.updatedAt.localeCompare(a.updatedAt);
+    if (dateCompare !== 0) return dateCompare;
+    return b.createdAt.localeCompare(a.createdAt);
+  });
 }
 
 /** Returns a prompt by ID, or null if not found. */
@@ -35,6 +48,8 @@ export function create(input: CreatePromptInput): Prompt {
     title: input.title,
     input: input.input,
     content: input.content,
+    tags: [],
+    version: "1.0.0",
     createdAt: now,
     updatedAt: now,
   };
