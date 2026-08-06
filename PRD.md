@@ -1628,6 +1628,197 @@ ai install github-review-agent
 
 ---
 
+# 21. GitHub Repository Integration
+
+Agents and skills can be installed directly into any GitHub repository.
+
+This enables developers to incorporate AI capabilities into their projects with a single click.
+
+---
+
+# Install Flow
+
+From any agent or skill page, the user clicks:
+
+```
+
+[Install to GitHub]
+```
+
+A modal opens with the following steps:
+
+## Step 1 — GitHub Account Connection
+
+Check if the user has a connected GitHub account.
+
+### Connected
+
+Show the repository selector.
+
+### Not Connected
+
+Show a prompt:
+
+```
+
+Connect your GitHub account to install to a repository.
+
+[Connect GitHub with OAuth]
+```
+
+After successful OAuth, return to this step with the repository shown.
+
+## Step 2 — Repository Selection
+
+From the connected GitHub account, show a searchable list of repositories.
+
+The user selects one repository.
+
+```
+
+[Search repositories...]
+
+Select repository:
+- my-org/backend-service  (public)
+- my-frontend-app  (public)
+- personal-projects/docs  (private)
+```
+
+## Step 3 — Destination Configuration
+
+Once a repository is selected, the user configures the destination.
+
+### Destination Path
+
+The user specifies the folder path within the repository.
+
+Default: `/agents/` or `/skills/`
+
+Example:
+
+```
+Folder: /ai/agents/
+Folder name: backend-reviewer/
+```
+
+Result:
+
+```
+my-repo/
+  ├── agent.yaml  (agent definition)
+  └── prompts/
+      ├── review.md
+      └── evaluate.md
+```
+
+### Folder Name
+
+The user names the folder that will contain the agent/skill.
+
+Default: auto-generated from name (e.g., `backend-reviewer`)
+
+The user can customize this.
+
+### Confirmation
+
+Show a summary before installation:
+
+```
+
+Install to: my-org/backend-service
+
+Destination path: /ai/agents/
+Folder name: backend-reviewer
+
+Files to create (3):
+  - agent.yaml          (agent definition)
+  - prompts/review.md   (review prompt)
+  - prompts/evaluate.md (evaluation prompt)
+
+[Install]  [Cancel]
+```
+
+## Step 4 — Installation
+
+On confirm, the app:
+
+1. Creates the directory structure in the repository
+2. Writes each file with correct content
+3. Commits with a descriptive message
+4. Returns status (success / partial / failed)
+
+### Success
+
+```
+
+Installed successfully to my-org/backend-service
+
+View in GitHub → [Open Repository]
+View agent in Studio → [Back to Agent]
+```
+
+### Partial / Failed
+
+Show which files succeeded and which failed, with retry option.
+
+---
+
+# Repository Structure
+
+When installed, an agent creates:
+
+```
+/<destination-path>/<folder-name>/
+
+  agent.yaml
+
+  prompts/
+    review.md
+    evaluate.md
+    improve.md
+
+  skills/
+    relevant-skill.yaml
+
+  context/
+    reference-context.md
+```
+
+When installed, a skill creates:
+
+```
+/<destination-path>/<folder-name>/
+
+  skill.yaml
+
+  rules.md
+  expected-output.md
+```
+
+The `agent.yaml` and `skill.yaml` use the Open format defined in section 16.
+
+---
+
+# OAuth Connection Flow
+
+If the user has no GitHub connection:
+
+```
+
+No GitHub account connected.
+
+GitHub OAuth will only be used for repository operations.
+We do not store your GitHub token beyond the session.
+
+[Connect with GitHub]
+```
+
+After OAuth succeeds, the user returns to the Install modal automatically.
+
+The GitHub connection is stored in the user's studio profile as an MCP connector.
+
+---
+
 # Product Principles
 
 - Developers first
