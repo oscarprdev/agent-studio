@@ -189,6 +189,58 @@ export function isAuthenticated(): boolean {
   return cookieExists(AUTH_TOKEN_KEY) && getItem(AUTH_CURRENT_USER_KEY) !== null;
 }
 
+export function getToken(): string | null {
+  try {
+    const cookies = document.cookie.split(";");
+    const tokenCookie = cookies.find((c) => c.trim().startsWith(`${AUTH_TOKEN_KEY}=`));
+    if (!tokenCookie) return null;
+    return tokenCookie.split("=").slice(1).join("=");
+  } catch {
+    return null;
+  }
+}
+
+export function updateWorkspace(input: {
+  name?: string;
+  plan?: "developer" | "team" | "company";
+}): AuthResult<Workspace> {
+  const { name, plan } = input;
+
+  if (!name && !plan) {
+    return { success: false, error: "No fields to update" };
+  }
+
+  const workspace = getWorkspace();
+  if (!workspace) {
+    return { success: false, error: "No workspace found" };
+  }
+
+  if (name !== undefined) {
+    if (!name || name.trim().length === 0) {
+      return { success: false, error: "Workspace name is required" };
+    }
+    if (name.length > 50) {
+      return { success: false, error: "Workspace name must be 50 characters or less" };
+    }
+  }
+
+  if (plan !== undefined && !["developer", "team", "company"].includes(plan)) {
+    return { success: false, error: "Invalid plan" };
+  }
+
+  const updated: Workspace = {
+    ...workspace,
+    name: name !== undefined ? name.trim() : workspace.name,
+    plan: plan !== undefined ? plan : workspace.plan,
+  };
+
+  if (!setItem(AUTH_WORKSPACE_KEY, updated)) {
+    return { success: false, error: "Failed to store workspace data" };
+  }
+
+  return { success: true, result: updated };
+}
+
 export function createWorkspace(input: {
   name: string;
   plan: "developer" | "team" | "company";

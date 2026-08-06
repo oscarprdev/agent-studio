@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { TopBar } from "@/components/layout/top-bar"
 import { getAll } from "@/lib/agents/store"
+import { useAuth } from "@/lib/auth-context"
 import { getAll as getAllSkills } from "@/lib/skills/store"
 import { getAll as getAllPrompts } from "@/lib/prompts/store"
 
@@ -23,6 +24,7 @@ const quickActions = [
 ]
 
 export default function DashboardPage() {
+  const { workspace } = useAuth()
   const [stats] = useState(() =>
     baseStats.map((s) => {
       if (s.label === "Agents") return { ...s, count: getAll().length }
@@ -35,6 +37,12 @@ export default function DashboardPage() {
   return (
     <>
       <TopBar title="Dashboard" />
+
+      <div className="px-6 pt-4">
+        <h2 className="text-lg font-semibold">
+          {workspace?.name ?? "No workspace"}
+        </h2>
+      </div>
 
       <div className="px-6 py-6 flex flex-col gap-6">
         {/* Stats */}
