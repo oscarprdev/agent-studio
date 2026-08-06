@@ -27,6 +27,21 @@ export interface Agent {
   updatedAt: string;
 }
 
+export interface AgentVersion {
+  versionId: string;
+  versionLabel: string;
+  name: string;
+  description: string;
+  system_prompt: string;
+  model: string;
+  skills: Skill[];
+  tools: Tool[];
+  context?: string;
+  createdAt: string;
+  changedAt: string;
+  changeReason?: string;
+}
+
 export interface WizardState {
   currentStep: number;
   goal: string;

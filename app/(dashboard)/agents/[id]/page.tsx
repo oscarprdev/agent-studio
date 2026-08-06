@@ -4,23 +4,23 @@ import { useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import * as store from "@/lib/agents/store"
-import type { Agent, AgentDefinition } from "@/lib/agents/types"
+import type { Agent, AgentDefinition, AgentVersion } from "@/lib/agents/types"
 import { Button } from "@/components/ui/button"
 import { TopBar } from "@/components/layout/top-bar"
 import { toast } from "@/components/ui/toast"
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible"
 import { AgentOutput } from "@/components/agent/AgentOutput"
+import { AgentVersionHistory } from "@/components/agent/AgentVersionHistory"
+import { AgentVersionCompare } from "@/components/agent/AgentVersionCompare"
 import { AgentDetailTabs } from "./_components/agent-detail-tabs"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 
@@ -61,6 +61,12 @@ export default function AgentDetailPage() {
   const router = useRouter()
   const id = params.id as string
   const [agent, setAgent] = useState<Agent | null>(() => store.getById(id))
+  const [versions, setVersions] = useState<AgentVersion[]>(() => {
+    if (!agent) return []
+    return store.getVersions(agent.id)
+  })
+  const [selectedVersion, setSelectedVersion] = useState<AgentVersion | null>(null)
+  const [compareOpen, setCompareOpen] = useState(false)
 
   if (!agent) {
     return (
@@ -76,6 +82,9 @@ export default function AgentDetailPage() {
     )
   }
 
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+  const resolvedAgent = agent
+
   const [draft, setDraft] = useState<AgentDefinition>({
     name: agent.name,
     description: agent.description,
@@ -86,8 +95,6 @@ export default function AgentDetailPage() {
   })
 
   const [showPreview, setShowPreview] = useState(false)
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
-  const resolvedAgent = agent
 
   function handleSave() {
     if (!isValidDraft(draft)) return
@@ -101,6 +108,7 @@ export default function AgentDetailPage() {
     })
     if (updated) {
       setAgent(updated)
+      setVersions(store.getVersions(updated.id))
       toast.add({ title: "Agent saved", type: "success" })
     } else {
       toast.add({ title: "Failed to save agent", type: "error" })
@@ -141,6 +149,48 @@ export default function AgentDetailPage() {
     )
   }
 
+  function handleDeleteVersion(versionId: string): boolean {
+    const ok = store.deleteVersion(resolvedAgent.id, versionId)
+    if (ok) {
+      setVersions(store.getVersions(resolvedAgent.id))
+      if (selectedVersion?.versionId === versionId) setSelectedVersion(null)
+      toast.add({ title: "Version deleted", type: "success" })
+    } else {
+      toast.add({ title: "Failed to delete version", type: "error" })
+    }
+    return ok
+  }
+
+  function handleRollbackVersion(versionId: string): boolean {
+    const restored = store.rollbackToVersion(resolvedAgent.id, versionId)
+    if (restored) {
+      setAgent(restored)
+      setVersions(store.getVersions(restored.id))
+      setSelectedVersion(null)
+      setDraft({
+        name: restored.name,
+        description: restored.description,
+        model: restored.model,
+        system_prompt: restored.system_prompt,
+        skills: restored.skills,
+        tools: restored.tools,
+      })
+      toast.add({ title: "Agent restored", type: "success" })
+    } else {
+      toast.add({ title: "Failed to restore version", type: "error" })
+    }
+    return restored !== null
+  }
+
+  function handleSelectVersion(v: AgentVersion) {
+    setSelectedVersion(v)
+    setCompareOpen(true)
+  }
+
+  function onCompareClose() {
+    setSelectedVersion(null)
+  }
+
   return (
     <>
       <TopBar title={agent.name} />
@@ -150,6 +200,16 @@ export default function AgentDetailPage() {
           agent={agent}
           draft={draft}
           onChange={setDraft}
+        />
+
+        <AgentVersionHistory
+          agent={agent}
+          versions={versions}
+          selectedVersion={selectedVersion}
+          onSelectVersion={handleSelectVersion}
+          onClearSelection={() => setSelectedVersion(null)}
+          onDeleteVersion={handleDeleteVersion}
+          onRollbackVersion={handleRollbackVersion}
         />
 
         <Collapsible open={showPreview} onOpenChange={setShowPreview}>
@@ -166,11 +226,6 @@ export default function AgentDetailPage() {
             Duplicate
           </Button>
           <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline" size="lg">
-                Delete
-              </Button>
-            </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Delete "{agent.name}"?</AlertDialogTitle>
@@ -181,7 +236,7 @@ export default function AgentDetailPage() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
+                <Button
                   variant="destructive"
                   onClick={() => {
                     handleDelete()
@@ -189,9 +244,12 @@ export default function AgentDetailPage() {
                   }}
                 >
                   Delete
-                </AlertDialogAction>
+                </Button>
               </AlertDialogFooter>
             </AlertDialogContent>
+            <Button variant="outline" size="lg" onClick={() => setDeleteConfirmOpen(true)}>
+              Delete
+            </Button>
           </AlertDialog>
           <Button variant="outline" onClick={handleExportMarkdown} size="lg">
             Export Markdown
@@ -216,6 +274,19 @@ export default function AgentDetailPage() {
           </Button>
         </div>
       </div>
+
+      {/* Compare dialog — AgentVersionCompare manages its own Dialog internally */}
+      {selectedVersion && (
+        <AgentVersionCompare
+          version={selectedVersion}
+          current={agent}
+          open={compareOpen}
+          onOpenChange={(open) => {
+            setCompareOpen(open)
+            if (!open) onCompareClose()
+          }}
+        />
+      )}
     </>
   )
 }
