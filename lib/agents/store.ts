@@ -199,6 +199,7 @@ export function remove(id: string): boolean {
     // when cleanupAgentVersions checks getAgent(agentId)
     cleanupAgentVersions(id);
     persist(filtered);
+    cleanupAgentVersions(id);
     return true;
   } catch {
     return false;
