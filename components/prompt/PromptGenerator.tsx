@@ -25,6 +25,19 @@ export function PromptGenerator({ onGenerate }: PromptGeneratorProps) {
   const trimmedInput = input.trim()
   const isInputEmpty = trimmedInput.length === 0
 
+  const [savedPromptId, setSavedPromptId] = useState<string | null>(null)
+
+  function formatPrompt(sections: PromptSections): string {
+    return [
+      `ROLE\n${sections.role}`,
+      `\nOBJECTIVE\n${sections.objective}`,
+      `\nTOOLS\n${sections.tools.join(", ")}`,
+      `\nWORKFLOW\n${sections.workflow.map((step, i) => `${i + 1}. ${step}`).join("\n")}`,
+      `\nRULES\n${sections.rules}`,
+      `\nOUTPUT\n${sections.output}`,
+    ].join("\n")
+  }
+
   async function handleGenerate() {
     if (isInputEmpty || isGenerating) return
 
@@ -43,17 +56,8 @@ export function PromptGenerator({ onGenerate }: PromptGeneratorProps) {
   async function handleCopy() {
     if (!result) return
 
-    const formatted = [
-      `ROLE\n${result.role}`,
-      `\nOBJECTIVE\n${result.objective}`,
-      `\nTOOLS\n${result.tools.join(", ")}`,
-      `\nWORKFLOW\n${result.workflow.map((step, i) => `${i + 1}. ${step}`).join("\n")}`,
-      `\nRULES\n${result.rules}`,
-      `\nOUTPUT\n${result.output}`,
-    ].join("\n")
-
     try {
-      await navigator.clipboard.writeText(formatted)
+      await navigator.clipboard.writeText(formatPrompt(result))
       toast.add({ title: "Copied to clipboard", type: "success" })
     } catch {
       toast.add({ title: "Failed to copy", type: "error" })
@@ -66,12 +70,25 @@ export function PromptGenerator({ onGenerate }: PromptGeneratorProps) {
     try {
       const title = trimmedInput.slice(0, 60)
       const prompt = store.create({ title, input: trimmedInput, content: result })
+      setSavedPromptId(prompt.id)
       toast.add({ title: "Prompt saved", type: "success" })
       onGenerate?.(prompt)
       router.push("/prompts")
     } catch {
       toast.add({ title: "Failed to save", type: "error" })
     }
+  }
+
+  function navigateToBuilder(path: string) {
+    if (!result) return
+    const encoded = formatPrompt(result)
+    const params = new URLSearchParams()
+    if (savedPromptId) {
+      params.set("promptId", savedPromptId)
+    } else {
+      params.set("promptContent", encoded)
+    }
+    router.push(`${path}?${params.toString()}`)
   }
 
   return (
@@ -109,6 +126,12 @@ export function PromptGenerator({ onGenerate }: PromptGeneratorProps) {
             </Button>
             <Button onClick={handleSave}>
               Save Prompt
+            </Button>
+            <Button variant="outline" onClick={() => navigateToBuilder("/agents/new")}>
+              Create Agent
+            </Button>
+            <Button variant="outline" onClick={() => navigateToBuilder("/skills/new")}>
+              Create Skill
             </Button>
           </div>
         </>
