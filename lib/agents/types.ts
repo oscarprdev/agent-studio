@@ -45,3 +45,10 @@ export type CreateAgentInput = Pick<
   Agent,
   "name" | "description" | "model" | "system_prompt" | "skills" | "tools"
 >;
+
+export type SaveAgentInput = CreateAgentInput & {
+  id?: string;
+  version?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
