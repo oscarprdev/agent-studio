@@ -195,3 +195,56 @@ Based on the audit, routes with prefetch value are:
 2. **No `loading.tsx` files means no route-level streaming** — If streaming is desired, it must be done through inline `Suspense` boundaries in the page components (as already practiced in the create routes).
 3. **The dashboard stat cards are the prime prefetch targets** — Three `<Link>` elements wrapping `<Card>` components, each pointing to a list page.
 4. **`/marketplace` link in sidebar has no route** — The sidebar includes a "Marketplace" item linking to `/marketplace`, but no route directory exists at `app/(dashboard)/marketplace/`. This route is a dead link.
+
+---
+
+## Verification Results
+
+Verification performed after task-019 added `cacheComponents: true` and `partialPrefetching: true` to `next.config.ts` (Next.js 16.3.0 / Turbopack).
+
+### Build
+
+| Check | Result |
+|---|---|
+| `npm run build` | ❌ **FAILED** — 1 error |
+| Config flags recognized | ✅ `cacheComponents` enabled, `partialPrefetching` enabled (logged by Next.js) |
+
+**Error:**
+
+```
+Error: Route segment config "dynamic" is not compatible with `nextConfig.cacheComponents`. Please remove it.
+  ./app/(auth)/login/page.tsx:3:14
+  > 3 | export const dynamic = "force-dynamic"
+```
+
+**Root cause:** `cacheComponents` is incompatible with route segment `dynamic = "force-dynamic"`. Only `app/(auth)/login/page.tsx` sets `dynamic = "force-dynamic"` across the entire codebase.
+
+**Fix:** Remove `export const dynamic = "force-dynamic"` from `app/(auth)/login/page.tsx` (resolved in task-022).
+
+### Lint
+
+| Check | Result |
+|---|---|
+| `npm run lint` | ❌ **FAILED** — pre-existing issue, unrelated to config change |
+
+**Error:**
+
+```
+Error: typescript-eslint does not support TS 7.0.
+Please see https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/...
+```
+
+**Root cause:** TypeScript 7.0.2 is installed but the project uses `typescript-eslint` which doesn't yet support TS 7.x API. This is a **pre-existing** environment issue, not caused by task-019 config change.
+
+### Cache Components Compatibility Summary
+
+| Route | Has `dynamic` config | Cache Comp compatible? |
+|---|---|---|
+| `/login` | `dynamic = "force-dynamic"` | ❌ Incompatible |
+| All other routes | No `dynamic` config | ✅ Compatible |
+
+**Note:** The `partialPrefetching` flag did not introduce any build errors or warnings on its own. The only incompatibility is between `cacheComponents` and `dynamic = "force-dynamic"`, and only the login page is affected.
+
+### Route Smoke Tests
+
+These were **not executed** because the build failed. Route-level smoke testing will proceed once the build is fixed (task-022).
