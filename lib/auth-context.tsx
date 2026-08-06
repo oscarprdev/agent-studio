@@ -12,6 +12,7 @@ import {
   signup as storeSignup,
   logout as storeLogout,
   createWorkspace as storeCreateWorkspace,
+  updateWorkspace as storeUpdateWorkspace,
 } from "@/lib/auth-store";
 
 interface AuthContextValue {
@@ -22,6 +23,7 @@ interface AuthContextValue {
   signup: (email: string, password: string, confirm: string) => AuthResult<{ requiresOnboarding: boolean }>;
   logout: () => void;
   createWorkspace: (name: string, plan: "developer" | "team" | "company") => AuthResult<Workspace>;
+  updateWorkspace: (input: { name?: string; plan?: "developer" | "team" | "company" }) => AuthResult<Workspace>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -65,6 +67,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return result;
   }, []);
 
+  const updateWorkspace = useCallback((input: { name?: string; plan?: "developer" | "team" | "company" }) => {
+    const result = storeUpdateWorkspace(input);
+    if (result.success) {
+      setWorkspace(storeGetWorkspace());
+    }
+    return result;
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -75,6 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signup,
         logout,
         createWorkspace,
+        updateWorkspace,
       }}
     >
       {children}
