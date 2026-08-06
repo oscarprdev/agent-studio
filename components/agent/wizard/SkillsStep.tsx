@@ -45,6 +45,9 @@ export function SkillsStep({ skills, onAdd, onRemove }: SkillsStepProps) {
       description: description.trim(),
       instructions: instructions.trim(),
       tools: [],
+      created_by: "local-user",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     })
 
     setName("")
