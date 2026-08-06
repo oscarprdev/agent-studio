@@ -4,8 +4,8 @@ import {
   CircleDotIcon,
   SquareIcon,
   MessageCircleIcon,
-  FolderIcon,
-  SearchIcon,
+  PencilIcon,
+  LinkIcon,
   type LucideIcon,
 } from "lucide-react";
 
@@ -47,22 +47,20 @@ export const MCP_SERVERS = [
     ],
   },
   {
-    type: "filesystem",
-    name: "Filesystem",
-    description: "Read and write files on the local filesystem",
-    icon: "FolderIcon",
+    type: "jira",
+    name: "Jira",
+    description: "Access Jira issues and projects",
+    icon: "PencilIcon",
     credentials: [
-      { key: "path", label: "Path", placeholder: "/path/to/directory", type: "text" },
+      { key: "apiKey", label: "API Key", placeholder: "jira_api_key", type: "password" },
     ],
   },
   {
-    type: "web-search",
-    name: "Web Search",
-    description: "Search the web for information",
-    icon: "SearchIcon",
-    credentials: [
-      { key: "apiKey", label: "API Key", placeholder: "sk-...", type: "password" },
-    ],
+    type: "custom",
+    name: "Custom",
+    description: "Connect to any MCP server with custom credentials",
+    icon: "LinkIcon",
+    credentials: [],
   },
 ] as const satisfies McpServerDefinition[];
 
@@ -71,8 +69,8 @@ const ICON_MAP: Record<string, LucideIcon> = {
   CircleDotIcon,
   SquareIcon,
   MessageCircleIcon,
-  FolderIcon,
-  SearchIcon,
+  PencilIcon,
+  LinkIcon,
 };
 
 export function getServerDefinition(
