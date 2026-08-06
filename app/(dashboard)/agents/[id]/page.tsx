@@ -10,12 +10,14 @@ import { TopBar } from "@/components/layout/top-bar"
 import { toast } from "@/components/ui/toast"
 import {
   AlertDialog,
+  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible"
 import { AgentOutput } from "@/components/agent/AgentOutput"
@@ -66,7 +68,6 @@ export default function AgentDetailPage() {
     return store.getVersions(agent.id)
   })
   const [selectedVersion, setSelectedVersion] = useState<AgentVersion | null>(null)
-  const [compareOpen, setCompareOpen] = useState(false)
 
   if (!agent) {
     return (
@@ -83,8 +84,6 @@ export default function AgentDetailPage() {
   }
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
-  const resolvedAgent = agent
-
   const [draft, setDraft] = useState<AgentDefinition>({
     name: agent.name,
     description: agent.description,
@@ -98,7 +97,7 @@ export default function AgentDetailPage() {
 
   function handleSave() {
     if (!isValidDraft(draft)) return
-    const updated = store.update(resolvedAgent.id, {
+    const updated = store.update(agent.id, {
       name: draft.name.trim(),
       description: draft.description.trim(),
       model: draft.model.trim(),
@@ -116,7 +115,7 @@ export default function AgentDetailPage() {
   }
 
   function handleDuplicate() {
-    const newAgent = store.duplicateAgent(resolvedAgent.id)
+    const newAgent = store.duplicateAgent(agent.id)
     if (newAgent) {
       toast.add({ title: "Agent duplicated", type: "success" })
       router.push(`/agents/${newAgent.id}`)
@@ -126,7 +125,7 @@ export default function AgentDetailPage() {
   }
 
   function handleDelete() {
-    const removed = store.deleteAgent(resolvedAgent.id)
+    const removed = store.deleteAgent(agent.id)
     if (removed) {
       router.push("/agents")
     } else {
@@ -135,24 +134,24 @@ export default function AgentDetailPage() {
   }
 
   function handleExportMarkdown() {
-    const md = store.exportAgentMarkdown(resolvedAgent.id)
+    const md = store.exportAgentMarkdown(agent.id)
     if (md) {
-      downloadFile(md, `${sanitizeFilename(resolvedAgent.name)}.md`, "text/markdown")
+      downloadFile(md, `${sanitizeFilename(agent.name)}.md`, "text/markdown")
     }
   }
 
   function handleExportJson() {
     downloadFile(
-      JSON.stringify({ ...draft, version: resolvedAgent.version, createdAt: resolvedAgent.createdAt, updatedAt: resolvedAgent.updatedAt }, null, 2),
-      `${sanitizeFilename(resolvedAgent.name)}.json`,
+      JSON.stringify({ ...draft, version: agent.version, createdAt: agent.createdAt, updatedAt: agent.updatedAt }, null, 2),
+      `${sanitizeFilename(agent.name)}.json`,
       "application/json",
     )
   }
 
   function handleDeleteVersion(versionId: string): boolean {
-    const ok = store.deleteVersion(resolvedAgent.id, versionId)
+    const ok = store.deleteVersion(agent.id, versionId)
     if (ok) {
-      setVersions(store.getVersions(resolvedAgent.id))
+      setVersions(store.getVersions(agent.id))
       if (selectedVersion?.versionId === versionId) setSelectedVersion(null)
       toast.add({ title: "Version deleted", type: "success" })
     } else {
@@ -162,7 +161,7 @@ export default function AgentDetailPage() {
   }
 
   function handleRollbackVersion(versionId: string): boolean {
-    const restored = store.rollbackToVersion(resolvedAgent.id, versionId)
+    const restored = store.rollbackToVersion(agent.id, versionId)
     if (restored) {
       setAgent(restored)
       setVersions(store.getVersions(restored.id))
@@ -184,11 +183,6 @@ export default function AgentDetailPage() {
 
   function handleSelectVersion(v: AgentVersion) {
     setSelectedVersion(v)
-    setCompareOpen(true)
-  }
-
-  function onCompareClose() {
-    setSelectedVersion(null)
   }
 
   return (
@@ -203,7 +197,6 @@ export default function AgentDetailPage() {
         />
 
         <AgentVersionHistory
-          agent={agent}
           versions={versions}
           selectedVersion={selectedVersion}
           onSelectVersion={handleSelectVersion}
@@ -226,6 +219,11 @@ export default function AgentDetailPage() {
             Duplicate
           </Button>
           <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" size="lg">
+                Delete
+              </Button>
+            </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Delete "{agent.name}"?</AlertDialogTitle>
@@ -236,7 +234,7 @@ export default function AgentDetailPage() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <Button
+                <AlertDialogAction
                   variant="destructive"
                   onClick={() => {
                     handleDelete()
@@ -244,12 +242,9 @@ export default function AgentDetailPage() {
                   }}
                 >
                   Delete
-                </Button>
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
-            <Button variant="outline" size="lg" onClick={() => setDeleteConfirmOpen(true)}>
-              Delete
-            </Button>
           </AlertDialog>
           <Button variant="outline" onClick={handleExportMarkdown} size="lg">
             Export Markdown
@@ -275,16 +270,18 @@ export default function AgentDetailPage() {
         </div>
       </div>
 
-      {/* Compare dialog — AgentVersionCompare manages its own Dialog internally */}
+      {/* Compare dialog */}
       {selectedVersion && (
         <AgentVersionCompare
           version={selectedVersion}
           current={agent}
-          open={compareOpen}
+          open={!!selectedVersion}
           onOpenChange={(open) => {
-            setCompareOpen(open)
-            if (!open) onCompareClose()
+            if (!open) {
+              setSelectedVersion(null)
+            }
           }}
+          onRollback={handleRollbackVersion}
         />
       )}
     </>

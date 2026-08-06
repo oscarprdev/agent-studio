@@ -141,6 +141,7 @@ function buildSystemPrompt(
 function generateDefaultSkills(goal: string): Skill[] {
   const lower = goal.toLowerCase();
   const skills: Skill[] = [];
+  const now = new Date().toISOString();
 
   if (lower.includes("review") || lower.includes("code")) {
     skills.push({
@@ -149,6 +150,9 @@ function generateDefaultSkills(goal: string): Skill[] {
       description: "Analyze code for quality, bugs, and best practices",
       instructions: "Review code changes, identify issues, and suggest improvements.",
       tools: [],
+      created_by: "local-user",
+      createdAt: now,
+      updatedAt: now,
     });
   }
 
@@ -159,6 +163,9 @@ function generateDefaultSkills(goal: string): Skill[] {
       description: "Create unit and integration tests",
       instructions: "Generate test cases based on code analysis.",
       tools: [],
+      created_by: "local-user",
+      createdAt: now,
+      updatedAt: now,
     });
   }
 
@@ -169,6 +176,9 @@ function generateDefaultSkills(goal: string): Skill[] {
       description: "Write and maintain documentation",
       instructions: "Generate clear, concise documentation for code and APIs.",
       tools: [],
+      created_by: "local-user",
+      createdAt: now,
+      updatedAt: now,
     });
   }
 
@@ -179,6 +189,9 @@ function generateDefaultSkills(goal: string): Skill[] {
       description: "Provide helpful responses to user queries",
       instructions: "Analyze the user's request and provide accurate, helpful information.",
       tools: [],
+      created_by: "local-user",
+      createdAt: now,
+      updatedAt: now,
     });
   }
 
