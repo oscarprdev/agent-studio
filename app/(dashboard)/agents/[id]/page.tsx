@@ -66,7 +66,6 @@ export default function AgentDetailPage() {
     return store.getVersions(agent.id)
   })
   const [selectedVersion, setSelectedVersion] = useState<AgentVersion | null>(null)
-  const [compareOpen, setCompareOpen] = useState(false)
 
   if (!agent) {
     return (
@@ -184,11 +183,6 @@ export default function AgentDetailPage() {
 
   function handleSelectVersion(v: AgentVersion) {
     setSelectedVersion(v)
-    setCompareOpen(true)
-  }
-
-  function onCompareClose() {
-    setSelectedVersion(null)
   }
 
   return (
@@ -203,7 +197,6 @@ export default function AgentDetailPage() {
         />
 
         <AgentVersionHistory
-          agent={agent}
           versions={versions}
           selectedVersion={selectedVersion}
           onSelectVersion={handleSelectVersion}
@@ -275,16 +268,18 @@ export default function AgentDetailPage() {
         </div>
       </div>
 
-      {/* Compare dialog — AgentVersionCompare manages its own Dialog internally */}
+      {/* Compare dialog */}
       {selectedVersion && (
         <AgentVersionCompare
           version={selectedVersion}
           current={agent}
-          open={compareOpen}
+          open={true}
           onOpenChange={(open) => {
-            setCompareOpen(open)
-            if (!open) onCompareClose()
+            if (!open) {
+              setSelectedVersion(null)
+            }
           }}
+          onRollback={handleRollbackVersion}
         />
       )}
     </>

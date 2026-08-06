@@ -196,6 +196,7 @@ export function remove(id: string): boolean {
     const filtered = agents.filter((a) => a.id !== id);
     if (filtered.length === agents.length) return false;
     persist(filtered);
+    cleanupAgentVersions(id);
     return true;
   } catch {
     return false;

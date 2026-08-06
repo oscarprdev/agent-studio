@@ -39,7 +39,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/toast"
 import { cn } from "@/lib/utils"
-import type { Agent, AgentVersion } from "@/lib/agents/types"
+import type { AgentVersion } from "@/lib/agents/types"
 import {
   EyeIcon,
   Trash2Icon,
@@ -50,7 +50,6 @@ import {
 } from "lucide-react"
 
 interface AgentVersionHistoryProps {
-  agent: Agent
   versions: AgentVersion[]
   selectedVersion: AgentVersion | null
   onSelectVersion: (version: AgentVersion) => void
@@ -73,7 +72,6 @@ function formatDate(dateStr: string): string {
 }
 
 export function AgentVersionHistory({
-  agent: _agent,
   versions,
   selectedVersion,
   onSelectVersion,
