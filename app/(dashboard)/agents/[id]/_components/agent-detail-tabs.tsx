@@ -1,14 +1,25 @@
 "use client"
 
+import { useState } from "react"
 import { TabsRoot, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { AgentOverviewTab } from "@/components/agent/AgentOverviewTab"
-import type { Agent } from "@/lib/agents/types"
+import { AgentConfigurationTab } from "@/components/agent/AgentConfigurationTab"
+import type { Agent, AgentDefinition } from "@/lib/agents/types"
 
 type AgentDetailTabsProps = {
   agent: Agent
 }
 
 export function AgentDetailTabs({ agent }: AgentDetailTabsProps) {
+  const [draft, setDraft] = useState<AgentDefinition>({
+    name: agent.name,
+    description: agent.description,
+    model: agent.model,
+    system_prompt: agent.system_prompt,
+    skills: agent.skills,
+    tools: agent.tools,
+  })
+
   return (
     <TabsRoot defaultValue="overview">
       <TabsList>
@@ -21,7 +32,7 @@ export function AgentDetailTabs({ agent }: AgentDetailTabsProps) {
         <AgentOverviewTab agent={agent} />
       </TabsContent>
       <TabsContent value="configuration">
-        <h2 className="font-heading text-lg">Configuration Tab — coming in task 054</h2>
+        <AgentConfigurationTab agent={agent} onChange={setDraft} />
       </TabsContent>
       <TabsContent value="skills">
         <h2 className="font-heading text-lg">Skills Tab — coming in task 055</h2>
