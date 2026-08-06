@@ -12,7 +12,7 @@ interface RetryErrorStateProps {
 }
 
 function RetryErrorState({ error, onRetry, title }: RetryErrorStateProps) {
-  if (typeof window !== "undefined" && process.env?.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === "development") {
     // eslint-disable-next-line no-console
     console.error("Error captured by RetryErrorState:", error)
   }
