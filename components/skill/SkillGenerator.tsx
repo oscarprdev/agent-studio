@@ -14,11 +14,12 @@ import type { Skill, SkillContent } from "@/lib/skills/types"
 
 interface SkillGeneratorProps {
   onGenerate?: (skill: Skill) => void
+  initialInput?: string
 }
 
-export function SkillGenerator({ onGenerate }: SkillGeneratorProps) {
+export function SkillGenerator({ onGenerate, initialInput }: SkillGeneratorProps) {
   const router = useRouter()
-  const [input, setInput] = useState("")
+  const [input, setInput] = useState(() => initialInput ?? "")
   const [isGenerating, setIsGenerating] = useState(false)
   const [result, setResult] = useState<SkillContent | null>(null)
 
