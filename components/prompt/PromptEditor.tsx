@@ -9,19 +9,14 @@ import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/toast"
 import { PromptOutput } from "@/components/prompt/PromptOutput"
 import * as store from "@/lib/prompts/store"
-import type { Prompt, PromptSections } from "@/lib/prompts/types"
+import type { Prompt } from "@/lib/prompts/types"
 
 export interface PromptEditorProps {
   prompt: Prompt | null
-  isEditing?: boolean
   onSave?: (prompt: Prompt) => void
-  onCopy?: (sections: PromptSections) => void
-  onEditToggle?: () => void
-  onDelete?: (id: string) => void
-  onSaveTitle?: (id: string, title: string) => void
 }
 
-export function PromptEditor({ prompt, isEditing, onSave, onCopy, onEditToggle, onDelete, onSaveTitle }: PromptEditorProps) {
+export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
   const router = useRouter()
   const [title, setTitle] = useState(prompt?.title ?? "")
 
