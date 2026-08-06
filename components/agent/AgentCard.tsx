@@ -33,7 +33,24 @@ function truncate(text: string, maxLength: number): string {
   return text.slice(0, maxLength).trimEnd() + "…"
 }
 
+function formatDate(dateStr: string): string {
+  try {
+    if (!dateStr) return "—"
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })
+  } catch {
+    return "—"
+  }
+}
+
 export function AgentCard({ agent, onDelete }: AgentCardProps) {
+  const skillCount = Array.isArray(agent.skills) ? agent.skills.length : 0
+  const toolCount = Array.isArray(agent.tools) ? agent.tools.length : 0
+  const formattedDate = formatDate(agent.createdAt)
+
   return (
     <Card>
       <CardHeader>
@@ -45,10 +62,19 @@ export function AgentCard({ agent, onDelete }: AgentCardProps) {
         </Badge>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="flex flex-col gap-3">
         <p className="line-clamp-2 text-muted-foreground">
           {truncate(agent.description, 120)}
         </p>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Badge variant="secondary" className="text-xs">
+            {skillCount} skill{skillCount !== 1 ? "s" : ""}
+          </Badge>
+          <Badge variant="secondary" className="text-xs">
+            {toolCount} tool{toolCount !== 1 ? "s" : ""}
+          </Badge>
+          <span>{formattedDate}</span>
+        </div>
       </CardContent>
 
       <CardFooter className="gap-2">
