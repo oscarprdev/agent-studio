@@ -24,8 +24,8 @@ export function AgentOverviewTab({
   agent: Agent
   draft: AgentDefinition
 }) {
-  const skillsCount = draft.skills.length
-  const toolsCount = draft.tools.length
+  const skillsCount = draft.skills?.length ?? 0
+  const toolsCount = draft.tools?.length ?? 0
   return (
     <div className="flex flex-col gap-6">
       <div>

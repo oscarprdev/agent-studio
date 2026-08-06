@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { Trash2Icon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -34,7 +35,11 @@ export function AgentToolsTab({
   onChange,
 }: AgentToolsTabProps) {
   const draftTools = draft.tools ?? []
-  const draftToolIds = new Set(draftTools.map((t) => t.id))
+
+  const draftToolIds = useMemo(
+    () => new Set(draftTools.map((t) => t.id)),
+    [draftTools],
+  )
 
   function handleToggleTool(toolId: string) {
     if (draftToolIds.has(toolId)) {

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import {
   FieldGroup,
   Field,
@@ -20,17 +20,6 @@ export function AgentConfigurationTab({ agent, onChange }: AgentConfigurationTab
   const [description, setDescription] = useState(agent.description)
   const [model, setModel] = useState(agent.model)
   const [systemPrompt, setSystemPrompt] = useState(agent.system_prompt)
-
-  useEffect(() => {
-    onChange({
-      name: name.trim(),
-      description: description.trim(),
-      model: model.trim(),
-      system_prompt: systemPrompt.trim(),
-      skills: agent.skills,
-      tools: agent.tools,
-    })
-  }, [name, description, model, systemPrompt, agent.skills, agent.tools, onChange])
 
   return (
     <FieldGroup>

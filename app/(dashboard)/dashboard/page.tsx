@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { Bot, Wrench, MessageSquare, Plus } from "lucide-react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
@@ -25,7 +25,7 @@ const quickActions = [
 
 export default function DashboardPage() {
   const { workspace } = useAuth()
-  const [stats, setStats] = useState(() =>
+  const [stats] = useState(() =>
     baseStats.map((s) => {
       if (s.label === "Agents") return { ...s, count: listAgents().length }
       if (s.label === "Skills") return { ...s, count: getAllSkills().length }
@@ -33,23 +33,6 @@ export default function DashboardPage() {
       return { ...s, count: 0 }
     })
   )
-
-  useEffect(() => {
-    function handleVisibility() {
-      if (document.visibilityState === "visible") {
-        setStats((prev) =>
-          prev.map((s) => {
-            if (s.label === "Agents") return { ...s, count: listAgents().length }
-            if (s.label === "Skills") return { ...s, count: getAllSkills().length }
-            if (s.label === "Prompts") return { ...s, count: getAllPrompts().length }
-            return s
-          }),
-        )
-      }
-    }
-    document.addEventListener("visibilitychange", handleVisibility)
-    return () => document.removeEventListener("visibilitychange", handleVisibility)
-  }, [])
 
   return (
     <>
