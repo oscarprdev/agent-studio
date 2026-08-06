@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -16,6 +17,7 @@ interface PromptEditorProps {
 }
 
 export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
+  const router = useRouter()
   const [title, setTitle] = useState(prompt?.title ?? "")
 
   function handleSave() {
@@ -32,6 +34,16 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
     } catch {
       toast.add({ title: "Failed to save", type: "error" })
     }
+  }
+
+  function handleCreateAgent() {
+    if (!prompt) return
+    router.push(`/agents/new?promptId=${prompt.id}`)
+  }
+
+  function handleCreateSkill() {
+    if (!prompt) return
+    router.push(`/skills/new?promptId=${prompt.id}`)
   }
 
   if (!prompt) {
@@ -62,6 +74,8 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <Button onClick={handleSave}>Save Changes</Button>
+        <Button variant="outline" onClick={handleCreateAgent}>Create Agent</Button>
+        <Button variant="outline" onClick={handleCreateSkill}>Create Skill</Button>
         <Button variant="outline" render={<Link href="/prompts" />} nativeButton={false}>
           Back to List
         </Button>
