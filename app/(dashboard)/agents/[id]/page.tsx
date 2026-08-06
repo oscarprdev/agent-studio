@@ -166,7 +166,7 @@ export default function AgentDetailPage() {
             Duplicate
           </Button>
           <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-            <AlertDialogTrigger asChild>
+            <AlertDialogTrigger>
               <Button variant="outline" size="lg">
                 Delete
               </Button>
