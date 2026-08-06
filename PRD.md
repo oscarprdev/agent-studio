@@ -1,609 +1,1324 @@
 # [PRD.md](http://PRD.md) — AI Agent Studio
 
-## 1. Overview
+# 1. Overview
 
-### Product Name (working title)
+## Product Name
 
-**AI Agent Studio**
+AI Agent Studio
 
-### Vision
+## Vision
 
-Create the operating system for AI developers to design, generate, manage, share, and execute AI agents, skills, and prompts.
+Create the operating system for AI developers to design, generate, manage, improve, share, and execute AI agents.
 
-The platform helps developers transform natural language requirements into production-ready AI workflows by combining:
+AI Agent Studio enables developers to transform natural language requirements into production-ready AI workflows by combining:
 
 - Prompt engineering
+
 - Agent creation
+
 - Skill generation
+
 - MCP integrations
+
 - Repository-aware context engineering
+
+- Knowledge management
+
 - Version control
+
+- Agent evaluation
+
 - Collaboration
 
-The goal is to become the place where developers manage their AI infrastructure in the same way they currently manage code with GitHub.
+- Marketplace distribution
+
+The goal is to become the place where developers manage AI infrastructure in the same way they currently manage software with GitHub.
 
 ---
 
-# 2. Problem Statement
+# 2. Product Evolution
+
+The first generation of AI Agent Studio focuses on:
+
+&gt; Generate AI agents from natural language.
+
+The evolved product becomes:
+
+&gt; A complete AI engineering platform where agents, prompts, skills, and knowledge continuously improve.
+
+AI Agent Studio should become:
+
+```
+
+GitHub + npm + VS Code + Notion
+
+for AI agents
+
+```
+
+The platform manages the complete lifecycle:
+
+```
+
+Create
+
+↓
+
+Contextualize
+
+↓
+
+Generate
+
+↓
+
+Evaluate
+
+↓
+
+Improve
+
+↓
+
+Version
+
+↓
+
+Share
+
+↓
+
+Reuse
+
+```
+
+---
+
+# 3. Problem Statement
 
 AI development is becoming increasingly complex.
 
 Developers now manage:
 
 - System prompts
+
 - Agent instructions
+
 - MCP servers
+
 - Tools
+
 - Skills
+
 - Context rules
+
 - Memory
+
 - Model configurations
+
 - Evaluation datasets
+
+- Repository knowledge
+
+- Engineering guidelines
 
 However, there is no unified workflow.
 
-Current problems:
+---
 
-## Problem 1 — Prompt creation is manual
+# Problem 1 — Prompt Creation Is Manual
 
 Developers write prompts from scratch.
 
 Example:
 
-> "Create an agent that reviews pull requests using GitHub and Linear"
+```
 
-The developer must manually define:
+Create an agent that reviews pull requests using GitHub and Linear.
+
+```
+
+The developer manually defines:
 
 - Role
+
 - Context
+
 - Tools
+
 - Workflow
+
 - Constraints
+
 - Output format
+
+- Rules
 
 ---
 
-## Problem 2 — Context engineering is difficult
+# Problem 2 — Context Engineering Is Difficult
+
+Agents require context.
 
 A prompt that works in one repository may fail in another.
 
 Agents need:
 
 - Architecture knowledge
+
 - Existing patterns
-- Code conventions
+
 - Documentation
+
 - Dependencies
+
+- Coding conventions
+
+- Business rules
 
 Today developers manually copy context.
 
 ---
 
-## Problem 3 — Agents are not reusable
+# Problem 3 — Agents Are Not Reusable
 
 Developers create useful agents but lose them.
 
-There is no:
+Missing:
 
-- Marketplace
+- Agent marketplace
+
 - Versioning
-- Sharing system
-- Discovery mechanism
+
+- Sharing
+
+- Discovery
+
+- Knowledge reuse
 
 ---
 
-## Problem 4 — No lifecycle management
+# Problem 4 — Agents Do Not Improve
 
 Agents evolve.
 
 Developers need:
 
 - Version history
-- Improvements
+
 - Testing
+
+- Evaluation
+
 - Performance comparison
 
----
-
-# 3. Product Goals
-
-## Primary goals
-
-Create a platform where developers can:
-
-1. Generate high-quality prompts automatically.
-2. Create reusable AI skills.
-3. Build AI agents.
-4. Connect MCP tools.
-5. Use repository context.
-6. Share and discover agents.
-7. Iterate and improve agents.
+- Improvement workflows
 
 ---
 
-# 4. Target Users
+# Problem 5 — Knowledge Is Lost
 
-## Primary Persona
+Companies accumulate AI knowledge:
 
-### AI Developer
+- Best prompts
+
+- Agent patterns
+
+- Coding rules
+
+- Architecture decisions
+
+- Successful workflows
+
+But there is no system to preserve and reuse it.
+
+---
+
+# 4. Product Goals
+
+## Primary Goals
+
+Enable developers to:
+
+- Generate high-quality prompts automatically
+
+- Create reusable AI skills
+
+- Build AI agents
+
+- Connect MCP tools
+
+- Inject repository context
+
+- Store AI knowledge
+
+- Learn from existing agents
+
+- Improve agents continuously
+
+- Test agent quality
+
+- Share AI workflows
+
+---
+
+# 5. Target Users
+
+# Primary Persona
+
+## AI Developer
 
 Profile:
 
 - Software engineer
+
 - Uses Cursor, Claude Code, OpenCode
+
 - Builds applications with LLMs
+
 - Uses MCP servers
+
 - Creates automation workflows
 
 Needs:
 
 - Faster agent creation
+
 - Better prompts
+
 - Reusable workflows
+
+- Context management
+
 - Team collaboration
 
 ---
 
-## Secondary Persona
+# Secondary Persona
 
-### Engineering Team Lead
+## Engineering Team Lead
 
 Needs:
 
 - Shared AI workflows
+
 - Standardized agents
+
 - Company AI knowledge base
 
----
-
-# 5. Core Concepts
-
-## Prompt
-
-The instruction given to an AI model.
-
-Example:
-
-"Review this pull request"
+- Quality control
 
 ---
 
-## Skill
+# 6. Core Concepts
 
-A reusable capability.
+# Prompt
+
+Instruction given to an AI model.
 
 Example:
 
-"Analyze backend architecture"
+```
+
+Review this pull request
+
+```
 
 Contains:
 
 - Instructions
-- Required tools
+
+- Context
+
 - Expected output
-- Rules
+
+- Constraints
 
 ---
 
-## Agent
+# Skill
 
-An autonomous workflow.
+A reusable AI capability.
+
+Example:
+
+```
+
+Analyze backend architecture
+
+```
+
+Contains:
+
+- Instructions
+
+- Rules
+
+- Required tools
+
+- Expected output
+
+---
+
+# Agent
+
+An autonomous AI workflow.
 
 Contains:
 
 - Model
+
 - Skills
+
 - Tools
+
 - Memory
+
 - Instructions
+
+- Context
+
+- Evaluation rules
 
 Example:
 
-"Senior Backend Engineer Agent"
+```
+
+Senior Backend Engineer Agent
+
+```
 
 ---
 
-## MCP Connector
+# MCP Connector
 
 External capability.
 
 Examples:
 
 - GitHub MCP
+
 - Linear MCP
+
 - Slack MCP
+
 - Notion MCP
 
 ---
 
-# 6. Main Use Cases
+# Context
+
+Reusable knowledge used to improve generation.
+
+Context can be:
+
+- Agent
+
+- Skill
+
+- Prompt
+
+- Document
+
+- Repository
+
+- Rule set
+
+- Architecture guideline
+
+- Evaluation dataset
 
 ---
 
-# Use Case 1
+# 7. Context Library
 
-# AI Prompt Generator
+## Overview
 
-## User Story
+The Context Library is the knowledge system of AI Agent Studio.
 
-As a developer, I want to describe what I need in natural language so the platform generates a professional AI prompt.
+It allows users to upload, store, organize, and reuse AI knowledge.
 
----
-
-## Flow
-
-### Step 1
-
-User opens Prompt Generator.
-
-Screen:
+Instead of generating isolated agents:
 
 ```
-Create a new AI prompt
 
-What do you want to create?
+Context Library
 
-[ Text Area ]
++
+
+AI Generation
+
+=
+
+Better Agents
+
+```
+
+---
+
+# Context Types
+
+## Agent Context
+
+Existing agents used as references.
 
 Example:
 
-"Create a senior backend engineer agent
-that reviews pull requests using GitHub
-and creates Linear issues."
+```
 
-[Generate Prompt]
+Senior Backend Reviewer Agent
 
 ```
+
+Contains:
+
+- System prompt
+
+- Skills
+
+- Tools
+
+- Workflow
+
+- Rules
+
+- Examples
+
+Used as:
+
+"Create a new agent following this pattern."
 
 ---
 
-### Step 2
+## Skill Context
 
-AI analyzes request.
+Reusable capabilities.
 
-The system extracts:
-
-- Goal
-- Role
-- Required tools
-- Constraints
-- Output format
-
----
-
-### Step 3
-
-Generated prompt:
-
-```
-ROLE
-
-You are a senior backend engineer.
-
-OBJECTIVE
-
-Review pull requests and identify
-architectural problems.
-
-TOOLS
-
-GitHub MCP
-Linear MCP
-
-WORKFLOW
-
-1. Analyze changed files
-2. Review architecture
-3. Create feedback
-4. Generate Linear issue
-
-RULES
-
-- Never modify production code
-- Follow repository conventions
-
-OUTPUT
-
-Markdown report
+Example:
 
 ```
 
-Actions:
-
-Buttons:
-
-- Copy
-- Save Prompt
-- Create Agent
-- Create Skill
-
----
-
-# Use Case 2
-
-# Repository Context Prompt Generator
-
-## User Story
-
-As a developer, I want AI to understand my codebase before creating an agent.
-
----
-
-## Flow
-
-User connects:
-
-```
-Connect Repository
-
-[GitHub]
-
-Select repository:
-
-trip/backend
-
-[Analyze]
+Clean Architecture Reviewer
 
 ```
 
-System collects:
-
-- Repository structure
-- README
-- Architecture docs
-- Dependencies
-- Existing patterns
-
----
-
-Generated context:
+Contains:
 
 ```
-Project:
-
-Go backend
-DDD architecture
-PostgreSQL
-CQRS
 
 Rules:
 
-- Use domain commands
-- Avoid CRUD handlers
-- Create tests
+- Respect dependency inversion
 
-```
+- Avoid framework coupling
 
-Then:
-
-```
-Generate Agent
+- Prefer domain models
 
 ```
 
 ---
 
-# Use Case 3
+## Prompt Context
 
-# MCP Powered Agent Generator
+Reusable prompts.
 
-## User Story
+Example:
 
-As a developer, I want to create agents that automatically use external tools.
+```
+
+Production Code Review Prompt
+
+```
 
 ---
+
+## Documentation Context
+
+Uploaded knowledge:
+
+- Markdown
+
+- PDFs
+
+- Text files
+
+- ADRs
+
+- Engineering guides
+
+Examples:
+
+```
+
+[architecture.md](http://architecture.md)
+
+[coding-standards.md](http://coding-standards.md)
+
+security-guidelines.pdf
+
+```
+
+---
+
+## Repository Context
+
+Connected repositories.
+
+Example:
+
+```
+
+github.com/company/backend
+
+```
+
+Extracts:
+
+- Architecture
+
+- Folder structure
+
+- Dependencies
+
+- Patterns
+
+- Coding style
+
+---
+
+# Context Upload Flow
+
+User:
+
+```
+
++ Add Context
+
+```
+
+Options:
+
+```
+
+Upload Document
+
+Import Agent
+
+Import Skill
+
+Connect Repository
+
+Create Knowledge Document
+
+```
+
+---
+
+AI analyzes:
 
 Example:
 
 Input:
 
 ```
-Create an agent that:
 
-- Reviews GitHub PRs
-- Creates Linear tasks
-- Updates documentation
+[backend-agent.md](http://backend-agent.md)
 
 ```
 
-Select:
-
-Tools:
-
-☑ GitHub MCP
-
-☑ Linear MCP
-
-☑ Notion MCP
-
-Generate:
+Output:
 
 ```
-Agent:
 
-Code Review Manager
+Category:
 
-Model:
+Backend Engineering
 
-Claude Sonnet
+Patterns:
 
-Tools:
+DDD
 
-github
-linear
-notion
+CQRS
 
+Hexagonal Architecture
 
-Skills:
+Style:
 
-- Code Review
-- Issue Creation
-- Documentation Update
+Explicit interfaces
+
+Domain driven design
 
 ```
 
 ---
 
-# Use Case 4
+# Context Card
 
-# AI Agent Dashboard
-
-Users manage:
-
-```
-Dashboard
-
-Agents
-
-├── Backend Reviewer
-├── CTO Agent
-├── QA Agent
-
-
-Skills
-
-├── Code Review
-├── Generate Tests
-
-
-Prompts
-
-├── Architecture Review
+Example:
 
 ```
 
----
+Senior Backend Agent
 
-# Agent Detail View
+Type:
 
-Information:
+Agent Pattern
 
-```
-Backend Reviewer
+Tags:
 
-Version:
-1.2.0
+Go
 
-Model:
-Claude Sonnet
+DDD
 
-Tools:
-Github MCP
-Linear MCP
+Backend
 
-Skills:
-Code Review
+Quality Score:
 
-Created:
-Aug 2026
-
-```
+94%
 
 Actions:
 
-Buttons:
+Use Context
 
-- Edit
-- Duplicate
-- Test
-- Share
-- Export
+Improve
+
+Duplicate
+
+Share
+
+```
 
 ---
 
-# Use Case 5
+# 8. Context Pinning
 
-# Agent Marketplace
+Generated agents can reference multiple contexts.
+
+Example:
+
+Create:
+
+```
+
+Senior Backend Reviewer
+
+```
+
+Pinned contexts:
+
+```
+
+✓ DDD Guidelines
+
+✓ Backend Repository Context
+
+✓ Security Rules
+
+✓ Existing Reviewer Agent
+
+✓ Company Coding Standards
+
+```
+
+Generation:
+
+```
+
+User Requirement
+
++
+
+Pinned Contexts
+
++
+
+Repository Context
+
++
+
+AI Generation
+
+=
+
+New Agent
+
+```
+
+---
+
+# 9. Agent Evolution System
+
+Agents are living software.
+
+Every agent has:
+
+- Versions
+
+- History
+
+- Improvements
+
+- Context changes
+
+---
+
+# Improve Agent Flow
+
+Existing:
+
+```
+
+Backend Reviewer v1
+
+```
+
+Action:
+
+```
+
+Improve Agent
+
+```
+
+User adds:
+
+```
+
++ Security Auditor Agent
+
++ OWASP Rules
+
++ New Repository Context
+
+```
+
+Result:
+
+```
+
+Backend Reviewer v2
+
+New capabilities:
+
+- Security review
+
+- Vulnerability detection
+
+- Dependency analysis
+
+```
+
+---
+
+# Agent Timeline
+
+```
+
+v1.0
+
+Initial generation
+
+↓
+
+v1.1
+
+Added architecture context
+
+↓
+
+v1.2
+
+Added security rules
+
+↓
+
+v2.0
+
+Major workflow improvement
+
+```
+
+---
+
+# 10. AI Improvement Modes
+
+AI Agent Studio provides predefined improvement strategies.
+
+Users can apply engineering philosophies.
+
+---
+
+# Caveman Mode
+
+Goal:
+
+Simplify the agent.
+
+Checks:
+
+- Remove unnecessary complexity
+
+- Reduce tools
+
+- Remove redundant steps
+
+- Simplify workflow
+
+- Reduce context size
+
+Example:
+
+Before:
+
+```
+
+12 tools
+
+8 skills
+
+complex workflow
+
+```
+
+After:
+
+```
+
+5 tools
+
+3 skills
+
+simple workflow
+
+```
+
+---
+
+# Clean Architecture Mode
+
+Goal:
+
+Improve structure.
+
+Checks:
+
+- Separation of concerns
+
+- Clear responsibilities
+
+- Dependency direction
+
+- Domain boundaries
+
+- Framework isolation
+
+---
+
+# Ponytail Mode
+
+Goal:
+
+Improve maintainability.
+
+Checks:
+
+- Reduce cognitive load
+
+- Avoid clever solutions
+
+- Improve readability
+
+- Make decisions explicit
+
+---
+
+# Senior Engineer Review Mode
+
+Simulates:
+
+```
+
+Staff Engineer Review
+
+```
+
+Checks:
+
+- Scalability
+
+- Reliability
+
+- Architecture
+
+- Maintainability
+
+---
+
+# Security Mode
+
+Checks:
+
+- Prompt injection risks
+
+- Unsafe tools
+
+- Data exposure
+
+- Permission issues
+
+---
+
+# Performance Mode
+
+Optimizes:
+
+- Token usage
+
+- Context size
+
+- Latency
+
+- Tool calls
+
+---
+
+# Minimal Agent Mode
+
+Question:
+
+"What can we remove?"
+
+Goal:
+
+Create the smallest effective agent.
+
+---
+
+# 11. Agent Quality Score
+
+Every agent receives a quality score.
+
+Example:
+
+```
+
+Backend Reviewer
+
+Quality Score: 91%
+
+Prompt Quality:
+
+95%
+
+Context Coverage:
+
+87%
+
+Workflow:
+
+90%
+
+Evaluation:
+
+88%
+
+```
+
+---
+
+Recommendations:
+
+```
+
+Missing:
+
+- Security rules
+
+- Evaluation examples
+
+- Error handling workflow
+
+```
+
+---
+
+# 12. Agent Evaluation Framework
+
+Agents need tests.
+
+Similar to software testing.
+
+---
+
+# Agent Test Cases
+
+Example:
+
+Agent:
+
+```
+
+Code Reviewer
+
+```
+
+Input:
+
+```
+
+Review this pull request
+
+```
+
+Expected:
+
+```
+
+Find bugs
+
+Suggest improvements
+
+Create issues
+
+```
+
+---
+
+# Evaluation Dataset
+
+Stores:
+
+- Good outputs
+
+- Bad outputs
+
+- Expected behavior
+
+- Regression cases
+
+---
+
+# Test Execution
+
+Example:
+
+```
+
+Before:
+
+82%
+
+After:
+
+94%
+
+```
+
+---
+
+# 13. Agent Composition
+
+Avoid giant agents.
+
+Build systems from smaller components.
+
+Example:
+
+```
+
+Engineering Manager Agent
+
+        |
+
+----------------------
+
+Architecture Skill
+
+Code Review Skill
+
+Security Skill
+
+Testing Skill
+
+Documentation Skill
+
+----------------------
+
+```
+
+---
+
+# 14. Agent Graph View
+
+Visual workflow editor.
+
+Example:
+
+```
+
+User Request
+
+↓
+
+Planner Agent
+
+↓
+
+----------------
+
+Architecture Agent
+
+Code Agent
+
+QA Agent
+
+Security Agent
+
+----------------
+
+↓
+
+Final Result
+
+```
+
+---
+
+# 15. Agent Marketplace
 
 Future feature.
 
+AI Agent Registry.
+
 Users publish:
 
+- Agents
+
+- Skills
+
+- Context packs
+
+- Templates
+
+---
+
+Example:
+
 ```
-Agent Marketplace
 
+Senior React Reviewer
 
-Popular:
+Security Auditor
 
-⭐ Senior React Reviewer
-
-⭐ CTO Architecture Agent
-
-⭐ Security Auditor
+CTO Architecture Agent
 
 ```
 
-Each agent contains:
+Each package contains:
 
 - Description
-- Screenshots
-- Required MCPs
+
 - Version
+
+- Required MCPs
+
+- Contexts
+
 - Reviews
+
+- Evaluation score
+
+---
 
 Install:
 
 ```
+
 Install Agent
 
 ```
 
 ---
 
-# 7. User Flows
+# 16. Agent Package Format
 
-## First Time User
+Open standard.
+
+Example:
 
 ```
-Signup
 
-↓
+.agent/
 
-Create Workspace
+ 
 
-↓
+backend-reviewer/
 
-Choose:
+agent.yaml
 
-Developer
-Team
-Company
+prompts/
 
-↓
+skills/
 
-Create first Agent
+contexts/
 
-↓
-
-Connect MCP
-
-↓
-
-Generate Agent
-
-↓
-
-Save
+evaluations/
 
 ```
 
 ---
 
-# 8. Application Views
+Example:
+
+```yaml
+
+name: Backend Reviewer
+
+version: 1.2.0
+
+model:
+
+ claude-sonnet
+
+skills:
+
+ - architecture-review
+
+ - security-review
+
+contexts:
+
+ - ddd-guidelines
+
+ - backend-patterns
+
+tools:
+
+ - github
+
+ - linear
+
+evaluation:
+
+ dataset:
+
+ - pr-review-tests
+
+```
 
 ---
+
+# 17. Application Views
 
 # Landing Page
-
-Sections:
 
 Hero:
 
 ```
+
 Build production AI agents faster.
 
-Generate prompts, skills and agents
-with automatic context engineering.
+Generate, improve and share AI workflows.
 
 [Create Agent]
 
@@ -613,11 +1328,10 @@ with automatic context engineering.
 
 # Dashboard
 
-Layout:
-
 Sidebar:
 
 ```
+
 Home
 
 Agents
@@ -625,6 +1339,8 @@ Agents
 Skills
 
 Prompts
+
+Context Library
 
 MCP Connections
 
@@ -634,16 +1350,25 @@ Settings
 
 ```
 
-Main:
+---
 
-Cards:
+# Context Library View
+
+Sections:
 
 ```
-12 Agents
 
-24 Skills
+Agents
 
-48 Prompts
+Skills
+
+Documents
+
+Repositories
+
+Patterns
+
+Rules
 
 ```
 
@@ -652,6 +1377,8 @@ Cards:
 # Agent Builder
 
 Wizard:
+
+```
 
 Step 1
 
@@ -673,81 +1400,83 @@ Step 5
 
 Generate
 
----
-
-# Prompt Editor
-
-Features:
-
-- Markdown editor
-- Version history
-- Compare versions
-- Test execution
-
----
-
-# MCP Manager
-
-View:
-
 ```
-Connected MCP Servers
 
-Github
+---
 
-Status:
-Connected
+# Agent Evolution View
 
-Linear
-
-Status:
-Connected
+Shows:
 
 ```
 
-Buttons:
+Current Version
 
-- Add MCP
-- Configure
-- Test
+v2.1
+
+History:
+
+v1
+
+v2
+
+v2.1
+
+Actions:
+
+Improve
+
+Compare
+
+Rollback
+
+```
 
 ---
 
-# 9. Backend Architecture Overview
+# Improvement Center
 
-## Frontend
+Shows:
 
-Stack:
+```
+
+Recommended Improvements
+
+✓ Apply Clean Architecture
+
+✓ Reduce Complexity
+
+✓ Add Security
+
+✓ Improve Evaluation
+
+```
+
+---
+
+# 18. Backend Architecture Overview
+
+Frontend:
 
 - Next.js
+
 - React
+
 - Tailwind
+
 - shadcn/ui
 
----
+Backend:
 
-## Backend
+- Go or Node.js
 
-Possible stack:
-
-- Node.js
-- Go
 - PostgreSQL
 
----
-
-## Services
+Services:
 
 ```
-Frontend
-
-↓
 
 API Gateway
-
-↓
-
---------------------------------
 
 User Service
 
@@ -755,15 +1484,15 @@ Agent Service
 
 Prompt Service
 
+Skill Service
+
+Context Service
+
 MCP Service
 
 AI Generation Service
 
 Evaluation Service
-
---------------------------------
-
-↓
 
 PostgreSQL
 
@@ -771,20 +1500,21 @@ PostgreSQL
 
 ---
 
-# 10. AI Generation Pipeline
+# 19. AI Generation Pipeline
 
 Example:
 
-User request:
+Input:
 
-"Create PR reviewer agent"
+```
+
+Create PR reviewer agent
+
+```
 
 Pipeline:
 
 ```
-User Input
-
-↓
 
 Intent Extraction
 
@@ -798,7 +1528,15 @@ Context Retrieval
 
 ↓
 
+Pattern Matching
+
+↓
+
 Prompt Generation
+
+↓
+
+Agent Generation
 
 ↓
 
@@ -806,7 +1544,7 @@ Validation
 
 ↓
 
-Agent Definition
+Evaluation
 
 ↓
 
@@ -816,169 +1554,96 @@ Save
 
 ---
 
-# 11. Data Model
+# 20. Long Term Vision
 
-## User
-
-```
-id
-email
-workspace_id
+AI Agent Studio becomes:
 
 ```
 
----
-
-## Agent
-
-```
-id
-
-name
-
-description
-
-model
-
-system_prompt
-
-skills[]
-
-tools[]
-
-version
+The GitHub for AI Agents
 
 ```
 
----
+Where developers:
 
-## Skill
+Create
 
-```
-id
+↓
 
-name
+Store
 
-instructions
+↓
 
-tools[]
+Improve
 
-created_by
+↓
 
-```
+Evaluate
 
----
+↓
 
-## Prompt
+Share
 
-```
-id
+↓
 
-content
+Deploy
 
-version
+AI software systems.
 
-tags[]
+Future ecosystem:
 
 ```
 
----
+Agent Registry
 
-# 12. Roadmap
+CLI
 
----
+Agent Runtime
 
-# Phase 1 — MVP
+MCP Server
 
-Duration: 6-8 weeks
+Package Manager
 
-Features:
+Evaluation Platform
 
-✅ Authentication
-
-✅ Dashboard
-
-✅ Prompt Generator
-
-✅ Agent Generator
-
-✅ Skill Generator
-
-✅ Save agents
-
-✅ Export markdown
-
----
-
-# Phase 2 — Developer Platform
-
-Duration: 3 months
-
-Features:
-
-- GitHub integration
-- Repository analysis
-- MCP connections
-- Context engineering
-- Agent testing
-- Versioning
-
----
-
-# Phase 3 — Collaboration
-
-Features:
-
-- Teams
-- Sharing
-- Permissions
-- Private libraries
-
----
-
-# Phase 4 — Marketplace
-
-Features:
-
-- Public agents
-- Ratings
-- Installation
-- Agent packages
-
----
-
-# Phase 5 — AI Agent Infrastructure
-
-Long term:
-
-Become:
-
-"The GitHub for AI Agents"
-
-Features:
-
-- Agent registry
-- CLI
-- MCP server
-- Package manager
+```
 
 Example:
 
-```
-npm install
+Today:
 
-becomes
+```
+
+npm install package
+
+```
+
+Future:
+
+```
 
 ai install github-review-agent
 
 ```
 
-# 13. Product Principles
+---
 
-1. Developers first.
-2. Context is everything.
-3. Agents are software.
-4. Prompts need lifecycle management.
-5. AI workflows should be reusable.
-6. Open ecosystem over closed platform.
+# Product Principles
 
+- Developers first
+
+- Context is everything
+
+- Agents are software
+
+- Prompts need lifecycle management
+
+- Knowledge must compound
+
+- AI workflows should be reusable
+
+- Open ecosystem over closed platform
+
+- Simplicity beats complexity
+
+- Every agent should continuously improve
