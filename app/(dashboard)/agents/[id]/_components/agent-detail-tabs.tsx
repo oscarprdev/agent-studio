@@ -1,9 +1,11 @@
 "use client"
 
 import { TabsRoot, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { AgentOverviewTab } from "@/components/agent/AgentOverviewTab"
+import type { Agent } from "@/lib/agents/types"
 
 type AgentDetailTabsProps = {
-  agent: { name: string; updatedAt: string }
+  agent: Agent
 }
 
 export function AgentDetailTabs({ agent }: AgentDetailTabsProps) {
@@ -16,7 +18,7 @@ export function AgentDetailTabs({ agent }: AgentDetailTabsProps) {
         <TabsTrigger value="tools">Tools</TabsTrigger>
       </TabsList>
       <TabsContent value="overview">
-        <h2 className="font-heading text-lg">Overview Tab — coming in task 053</h2>
+        <AgentOverviewTab agent={agent} />
       </TabsContent>
       <TabsContent value="configuration">
         <h2 className="font-heading text-lg">Configuration Tab — coming in task 054</h2>
