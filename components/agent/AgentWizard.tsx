@@ -18,17 +18,18 @@ import type { Agent, Tool, WizardState } from "@/lib/agents/types"
 
 interface AgentWizardProps {
   onSave?: (agent: Agent) => void
+  initialState?: Partial<WizardState>
 }
 
-export function AgentWizard({ onSave }: AgentWizardProps) {
+export function AgentWizard({ onSave, initialState }: AgentWizardProps) {
   const router = useRouter()
-  const [state, setState] = useState<WizardState>({
+  const [state, setState] = useState<WizardState>(() => ({
     currentStep: 0,
-    goal: "",
-    selectedTools: [],
-    skills: [],
-    context: "",
-  })
+    goal: initialState?.goal ?? "",
+    selectedTools: initialState?.selectedTools ?? [],
+    skills: initialState?.skills ?? [],
+    context: initialState?.context ?? "",
+  }))
   const [isGenerating, setIsGenerating] = useState(false)
 
   const { currentStep } = state

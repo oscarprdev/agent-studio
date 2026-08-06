@@ -8,11 +8,13 @@ import { Button } from "@/components/ui/button"
 import { TopBar } from "@/components/layout/top-bar"
 import { getAll } from "@/lib/agents/store"
 import { useAuth } from "@/lib/auth-context"
+import { getAll as getAllSkills } from "@/lib/skills/store"
+import { getAll as getAllPrompts } from "@/lib/prompts/store"
 
 const baseStats = [
   { label: "Agents", icon: Bot, href: "/agents" },
-  { label: "Skills", count: 0, icon: Wrench, href: "/skills" },
-  { label: "Prompts", count: 0, icon: MessageSquare, href: "/prompts" },
+  { label: "Skills", icon: Wrench, href: "/skills" },
+  { label: "Prompts", icon: MessageSquare, href: "/prompts" },
 ]
 
 const quickActions = [
@@ -24,9 +26,12 @@ const quickActions = [
 export default function DashboardPage() {
   const { workspace } = useAuth()
   const [stats] = useState(() =>
-    baseStats.map((s) =>
-      s.label === "Agents" ? { ...s, count: getAll().length } : s
-    )
+    baseStats.map((s) => {
+      if (s.label === "Agents") return { ...s, count: getAll().length }
+      if (s.label === "Skills") return { ...s, count: getAllSkills().length }
+      if (s.label === "Prompts") return { ...s, count: getAllPrompts().length }
+      return { ...s, count: 0 }
+    })
   )
 
   return (

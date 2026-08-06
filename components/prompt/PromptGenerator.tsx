@@ -25,6 +25,17 @@ export function PromptGenerator({ onGenerate }: PromptGeneratorProps) {
   const trimmedInput = input.trim()
   const isInputEmpty = trimmedInput.length === 0
 
+  function formatPrompt(sections: PromptSections): string {
+    return [
+      `ROLE\n${sections.role}`,
+      `\nOBJECTIVE\n${sections.objective}`,
+      `\nTOOLS\n${sections.tools.join(", ")}`,
+      `\nWORKFLOW\n${sections.workflow.map((step, i) => `${i + 1}. ${step}`).join("\n")}`,
+      `\nRULES\n${sections.rules}`,
+      `\nOUTPUT\n${sections.output}`,
+    ].join("\n")
+  }
+
   async function handleGenerate() {
     if (isInputEmpty || isGenerating) return
 
@@ -43,17 +54,8 @@ export function PromptGenerator({ onGenerate }: PromptGeneratorProps) {
   async function handleCopy() {
     if (!result) return
 
-    const formatted = [
-      `ROLE\n${result.role}`,
-      `\nOBJECTIVE\n${result.objective}`,
-      `\nTOOLS\n${result.tools.join(", ")}`,
-      `\nWORKFLOW\n${result.workflow.map((step, i) => `${i + 1}. ${step}`).join("\n")}`,
-      `\nRULES\n${result.rules}`,
-      `\nOUTPUT\n${result.output}`,
-    ].join("\n")
-
     try {
-      await navigator.clipboard.writeText(formatted)
+      await navigator.clipboard.writeText(formatPrompt(result))
       toast.add({ title: "Copied to clipboard", type: "success" })
     } catch {
       toast.add({ title: "Failed to copy", type: "error" })
@@ -72,6 +74,13 @@ export function PromptGenerator({ onGenerate }: PromptGeneratorProps) {
     } catch {
       toast.add({ title: "Failed to save", type: "error" })
     }
+  }
+
+  function navigateToBuilder(path: string) {
+    if (!result) return
+    const params = new URLSearchParams()
+    params.set("promptContent", formatPrompt(result))
+    router.push(`${path}?${params.toString()}`)
   }
 
   return (
@@ -103,12 +112,18 @@ export function PromptGenerator({ onGenerate }: PromptGeneratorProps) {
         <>
           <PromptOutput content={result} />
 
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Button variant="outline" onClick={handleCopy}>
               Copy
             </Button>
             <Button onClick={handleSave}>
               Save Prompt
+            </Button>
+            <Button variant="outline" onClick={() => navigateToBuilder("/agents/new")}>
+              Create Agent
+            </Button>
+            <Button variant="outline" onClick={() => navigateToBuilder("/skills/new")}>
+              Create Skill
             </Button>
           </div>
         </>

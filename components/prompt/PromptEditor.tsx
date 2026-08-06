@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -16,6 +17,7 @@ interface PromptEditorProps {
 }
 
 export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
+  const router = useRouter()
   const [title, setTitle] = useState(prompt?.title ?? "")
 
   function handleSave() {
@@ -32,6 +34,20 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
     } catch {
       toast.add({ title: "Failed to save", type: "error" })
     }
+  }
+
+  function handleCreateAgent() {
+    if (!prompt) return
+    const params = new URLSearchParams()
+    params.set("promptId", prompt.id)
+    router.push(`/agents/new?${params.toString()}`)
+  }
+
+  function handleCreateSkill() {
+    if (!prompt) return
+    const params = new URLSearchParams()
+    params.set("promptId", prompt.id)
+    router.push(`/skills/new?${params.toString()}`)
   }
 
   if (!prompt) {
@@ -60,8 +76,10 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
 
       <PromptOutput content={prompt.content} />
 
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <Button onClick={handleSave}>Save Changes</Button>
+        <Button variant="outline" onClick={handleCreateAgent}>Create Agent</Button>
+        <Button variant="outline" onClick={handleCreateSkill}>Create Skill</Button>
         <Button variant="outline" render={<Link href="/prompts" />} nativeButton={false}>
           Back to List
         </Button>
