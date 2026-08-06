@@ -33,10 +33,10 @@ export function create(input: CreateSkillInput): Skill {
   const skill: Skill = {
     id: crypto.randomUUID(),
     name: input.name,
-    description: input.content.description,
-    input: input.input,
-    content: input.content,
-    tags: input.tags,
+    description: input.description,
+    instructions: input.instructions,
+    tools: input.tools,
+    created_by: input.created_by,
     createdAt: now,
     updatedAt: now,
   };
@@ -99,7 +99,6 @@ export function duplicate(id: string): Skill | null {
       ...original,
       id: crypto.randomUUID(),
       name: `${original.name} (copy)`,
-      tags: [...original.tags],
       createdAt: now,
       updatedAt: now,
     };
@@ -112,7 +111,7 @@ export function duplicate(id: string): Skill | null {
   }
 }
 
-/** Filters skills by name, description, or tags (case-insensitive). Empty query returns all. */
+/** Filters skills by name or description (case-insensitive). Empty query returns all. */
 export function search(query: string): Skill[] {
   if (!query.trim()) return readAll();
 
@@ -120,7 +119,6 @@ export function search(query: string): Skill[] {
   return readAll().filter((s) => {
     if (s.name.toLowerCase().includes(q)) return true;
     if (s.description.toLowerCase().includes(q)) return true;
-    if (s.tags.some((tag) => tag.toLowerCase().includes(q))) return true;
     return false;
   });
 }

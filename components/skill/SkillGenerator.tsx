@@ -7,10 +7,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from "@/components/ui/toast"
-import { SkillOutput } from "@/components/skill/SkillOutput"
 import { generateSkill } from "@/lib/ai/generate-skill"
 import * as store from "@/lib/skills/store"
-import type { Skill, SkillContent } from "@/lib/skills/types"
+import type { CreateSkillInput, Skill } from "@/lib/skills/types"
 
 interface SkillGeneratorProps {
   onGenerate?: (skill: Skill) => void
@@ -21,7 +20,7 @@ export function SkillGenerator({ onGenerate, initialInput }: SkillGeneratorProps
   const router = useRouter()
   const [input, setInput] = useState(() => initialInput ?? "")
   const [isGenerating, setIsGenerating] = useState(false)
-  const [result, setResult] = useState<SkillContent | null>(null)
+  const [result, setResult] = useState<Partial<CreateSkillInput> | null>(null)
 
   const trimmedInput = input.trim()
   const isInputEmpty = trimmedInput.length === 0
@@ -31,8 +30,8 @@ export function SkillGenerator({ onGenerate, initialInput }: SkillGeneratorProps
 
     setIsGenerating(true)
     try {
-      const content = await generateSkill({ description: trimmedInput })
-      setResult(content)
+      const generated = await generateSkill({ description: trimmedInput })
+      setResult(generated)
       toast.add({ title: "Skill generated", type: "success" })
     } catch {
       toast.add({ title: "Generation failed", type: "error" })
@@ -45,13 +44,10 @@ export function SkillGenerator({ onGenerate, initialInput }: SkillGeneratorProps
     if (!result) return
 
     const formatted = [
-      `NAME\n${result.name}`,
-      `\nDESCRIPTION\n${result.description}`,
-      `\nINSTRUCTIONS\n${result.instructions}`,
-      `\nTRIGGERS\n${result.triggers.join(", ")}`,
-      `\nTOOLS\n${result.tools.join(", ")}`,
-      `\nEXPECTED_OUTPUT\n${result.expectedOutput}`,
-      `\nRULES\n${result.rules}`,
+      `NAME\n${result.name ?? ""}`,
+      `\nDESCRIPTION\n${result.description ?? ""}`,
+      `\nINSTRUCTIONS\n${result.instructions ?? ""}`,
+      `\nTOOLS\n${(result.tools ?? []).join(", ")}`,
     ].join("\n")
 
     try {
@@ -66,8 +62,14 @@ export function SkillGenerator({ onGenerate, initialInput }: SkillGeneratorProps
     if (!result) return
 
     try {
-      const name = trimmedInput.slice(0, 60)
-      const skill = store.create({ name, input: trimmedInput, content: result, tags: [] })
+      const name = result.name ?? trimmedInput.slice(0, 60)
+      const skill = store.create({
+        name,
+        description: result.description ?? "",
+        instructions: result.instructions ?? "",
+        tools: result.tools ?? [],
+        created_by: "local-user",
+      })
       toast.add({ title: "Skill saved", type: "success" })
       onGenerate?.(skill)
       router.push("/skills")
@@ -102,8 +104,32 @@ export function SkillGenerator({ onGenerate, initialInput }: SkillGeneratorProps
       </Button>
 
       {result && (
-        <>
-          <SkillOutput content={result} />
+        <div className="rounded-md border p-4 flex flex-col gap-4">
+          <section className="flex flex-col gap-1">
+            <h4 className="text-sm font-medium text-muted-foreground">NAME</h4>
+            <p>{result.name ?? "—"}</p>
+          </section>
+          <section className="flex flex-col gap-1">
+            <h4 className="text-sm font-medium text-muted-foreground">DESCRIPTION</h4>
+            <p>{result.description ?? "—"}</p>
+          </section>
+          <section className="flex flex-col gap-1">
+            <h4 className="text-sm font-medium text-muted-foreground">INSTRUCTIONS</h4>
+            <p className="whitespace-pre-wrap text-sm">{result.instructions ?? "—"}</p>
+          </section>
+          <section className="flex flex-col gap-1">
+            <h4 className="text-sm font-medium text-muted-foreground">TOOLS</h4>
+            <div className="flex flex-wrap gap-1">
+              {(result.tools ?? []).map((tool) => (
+                <span
+                  key={tool}
+                  className="rounded-md bg-secondary px-2 py-0.5 text-xs"
+                >
+                  {tool}
+                </span>
+              ))}
+            </div>
+          </section>
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button variant="outline" onClick={handleCopy}>
@@ -113,7 +139,7 @@ export function SkillGenerator({ onGenerate, initialInput }: SkillGeneratorProps
               Save Skill
             </Button>
           </div>
-        </>
+        </div>
       )}
     </div>
   )

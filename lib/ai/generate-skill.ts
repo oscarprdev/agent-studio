@@ -1,22 +1,25 @@
-import type { SkillContent } from "@/lib/skills/types";
+import type { CreateSkillInput } from "@/lib/skills/types";
 
 /**
  * Mock AI skill generator. This is a deterministic, template-based stand-in
  * for a real AI provider. Given the same description, it always produces the
  * same structured output. Replace with a real API call when ready.
+ *
+ * Returns a Partial<CreateSkillInput> (name, description, instructions, tools)
+ * — id, createdAt, updatedAt, and created_by are added by the store.
  */
 export async function generateSkill(input: {
   description: string;
-}): Promise<SkillContent> {
+}): Promise<Partial<CreateSkillInput>> {
   await new Promise((r) => setTimeout(r, 800));
 
   const description = input.description.trim().slice(0, 500);
 
   if (!description) {
-    return buildGenericSkillContent();
+    return buildGeneric();
   }
 
-  return buildSkillContent(description);
+  return buildSkill(description);
 }
 
 // ---------------------------------------------------------------------------
@@ -45,29 +48,18 @@ const TOOL_KEYWORDS: Record<string, string> = {
 // Section builders
 // ---------------------------------------------------------------------------
 
-function buildSkillContent(description: string): SkillContent {
+function buildSkill(description: string): Partial<CreateSkillInput> {
   const lower = description.toLowerCase();
 
-  const name = extractName(description);
-  const descriptionText = extractDescription(description);
-  const instructions = buildInstructions(lower);
-  const triggers = extractTriggers(lower);
-  const tools = extractTools(lower);
-  const expectedOutput = extractExpectedOutput(lower);
-  const rules = buildRules(lower);
-
   return {
-    name,
-    description: descriptionText,
-    instructions,
-    triggers,
-    tools,
-    expectedOutput,
-    rules,
+    name: extractName(description),
+    description: extractDescription(description),
+    instructions: buildInstructions(lower),
+    tools: extractTools(lower),
   };
 }
 
-function buildGenericSkillContent(): SkillContent {
+function buildGeneric(): Partial<CreateSkillInput> {
   return {
     name: "Untitled Skill",
     description: "Describe your needs",
@@ -76,14 +68,7 @@ function buildGenericSkillContent(): SkillContent {
       "Research existing solutions and patterns",
       "Design the solution approach",
     ].join("\n"),
-    triggers: ["when asked to help", "on request"],
     tools: ["GitHub", "VS Code", "Terminal"],
-    expectedOutput: "Markdown report",
-    rules: [
-      "Follow established best practices",
-      "Write clear, maintainable, and well-documented code",
-      "Consider edge cases and error handling",
-    ].join("\n"),
   };
 }
 
@@ -139,24 +124,6 @@ function buildInstructions(lower: string): string {
   return steps.join("\n");
 }
 
-function extractTriggers(lower: string): string[] {
-  const triggers: string[] = [];
-
-  if (lower.includes("review") || lower.includes("audit")) {
-    triggers.push("when reviewing code", "on pull request");
-  } else if (lower.includes("test")) {
-    triggers.push("when writing tests", "on code change");
-  } else if (lower.includes("deploy") || lower.includes("release")) {
-    triggers.push("when deploying", "on release");
-  } else if (lower.includes("design") || lower.includes("ui")) {
-    triggers.push("when designing UI", "on feature request");
-  } else {
-    triggers.push("when asked to help", "on request");
-  }
-
-  return triggers;
-}
-
 function extractTools(lower: string): string[] {
   const found: string[] = [];
   for (const [keyword, label] of Object.entries(TOOL_KEYWORDS)) {
@@ -167,31 +134,4 @@ function extractTools(lower: string): string[] {
   return found.length > 0
     ? [...new Set(found)]
     : ["GitHub", "VS Code", "Terminal"];
-}
-
-function extractExpectedOutput(lower: string): string {
-  if (lower.includes("report")) return "Markdown report";
-  if (lower.includes("checklist")) return "Markdown checklist";
-  if (lower.includes("summary")) return "Markdown summary";
-  if (lower.includes("table")) return "Markdown table";
-  if (lower.includes("json")) return "JSON report";
-  if (lower.includes("csv")) return "CSV report";
-  return "Markdown report";
-}
-
-function buildRules(lower: string): string {
-  const rules: string[] = [
-    "Follow established best practices and conventions",
-    "Write clear, maintainable, and well-documented code",
-  ];
-
-  if (lower.includes("security")) {
-    rules.push("Prioritize security and validate all inputs");
-  } else if (lower.includes("performance")) {
-    rules.push("Optimize for performance and minimize resource usage");
-  } else {
-    rules.push("Consider edge cases and error handling");
-  }
-
-  return rules.join("\n");
 }

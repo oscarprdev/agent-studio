@@ -1,32 +1,5 @@
-/** Union of all `SkillContent` keys for section iteration. */
-export type SkillContentKey =
-  | "name"
-  | "description"
-  | "instructions"
-  | "triggers"
-  | "tools"
-  | "expectedOutput"
-  | "rules";
+// Canonical MVP skill shape — replaces the old generator-oriented Skill entity.
 
-/** The structured, machine-readable representation of a generated skill. */
-export interface SkillContent {
-  /** Skill display name. */
-  name: string;
-  /** One-line purpose of the skill. */
-  description: string;
-  /** Detailed step-by-step instructions (newline-separated). */
-  instructions: string;
-  /** When to activate this skill. */
-  triggers: string[];
-  /** Required external tools or MCPs. */
-  tools: string[];
-  /** What the skill produces. */
-  expectedOutput: string;
-  /** Constraints and guidelines (newline-separated). */
-  rules: string;
-}
-
-/** A reusable AI capability definition. */
 export interface Skill {
   /** Unique identifier (crypto.randomUUID()). */
   id: string;
@@ -34,17 +7,17 @@ export interface Skill {
   name: string;
   /** Short summary of what the skill does. */
   description: string;
-  /** Original user description that generated this skill. */
-  input: string;
-  /** Generated structured skill content. */
-  content: SkillContent;
-  /** Categorization tags. */
-  tags: string[];
-  /** ISO 8601 creation timestamp. */
+  /** User-provided instructions (may be empty). */
+  instructions: string;
+  /** Tool IDs from TOOL_CANDIDATES. */
+  tools: string[];
+  /** "local-user" sentinel for MVP; store or UI resolves at runtime. */
+  created_by: string;
+  /** ISO 8601 creation timestamp (immutable). */
   createdAt: string;
   /** ISO 8601 last-updated timestamp. */
   updatedAt: string;
 }
 
-/** Subset of `Skill` fields required for creation. */
-export type CreateSkillInput = Pick<Skill, "name" | "input" | "content" | "tags">;
+/** Mutable fields callers must provide when creating a skill. */
+export type CreateSkillInput = Pick<Skill, "name" | "description" | "instructions" | "tools" | "created_by">;
