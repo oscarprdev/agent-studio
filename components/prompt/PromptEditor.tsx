@@ -38,12 +38,16 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
 
   function handleCreateAgent() {
     if (!prompt) return
-    router.push(`/agents/new?promptId=${prompt.id}`)
+    const params = new URLSearchParams()
+    params.set("promptId", prompt.id)
+    router.push(`/agents/new?${params.toString()}`)
   }
 
   function handleCreateSkill() {
     if (!prompt) return
-    router.push(`/skills/new?promptId=${prompt.id}`)
+    const params = new URLSearchParams()
+    params.set("promptId", prompt.id)
+    router.push(`/skills/new?${params.toString()}`)
   }
 
   if (!prompt) {
@@ -72,7 +76,7 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
 
       <PromptOutput content={prompt.content} />
 
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <Button onClick={handleSave}>Save Changes</Button>
         <Button variant="outline" onClick={handleCreateAgent}>Create Agent</Button>
         <Button variant="outline" onClick={handleCreateSkill}>Create Skill</Button>

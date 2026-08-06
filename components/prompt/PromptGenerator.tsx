@@ -25,8 +25,6 @@ export function PromptGenerator({ onGenerate }: PromptGeneratorProps) {
   const trimmedInput = input.trim()
   const isInputEmpty = trimmedInput.length === 0
 
-  const [savedPromptId, setSavedPromptId] = useState<string | null>(null)
-
   function formatPrompt(sections: PromptSections): string {
     return [
       `ROLE\n${sections.role}`,
@@ -70,7 +68,6 @@ export function PromptGenerator({ onGenerate }: PromptGeneratorProps) {
     try {
       const title = trimmedInput.slice(0, 60)
       const prompt = store.create({ title, input: trimmedInput, content: result })
-      setSavedPromptId(prompt.id)
       toast.add({ title: "Prompt saved", type: "success" })
       onGenerate?.(prompt)
       router.push("/prompts")
@@ -81,13 +78,8 @@ export function PromptGenerator({ onGenerate }: PromptGeneratorProps) {
 
   function navigateToBuilder(path: string) {
     if (!result) return
-    const encoded = formatPrompt(result)
     const params = new URLSearchParams()
-    if (savedPromptId) {
-      params.set("promptId", savedPromptId)
-    } else {
-      params.set("promptContent", encoded)
-    }
+    params.set("promptContent", formatPrompt(result))
     router.push(`${path}?${params.toString()}`)
   }
 
@@ -120,7 +112,7 @@ export function PromptGenerator({ onGenerate }: PromptGeneratorProps) {
         <>
           <PromptOutput content={result} />
 
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Button variant="outline" onClick={handleCopy}>
               Copy
             </Button>

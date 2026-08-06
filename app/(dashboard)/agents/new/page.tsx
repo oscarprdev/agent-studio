@@ -19,7 +19,7 @@ function AgentWizardPage() {
     if (prompt) {
       initialState = {
         goal: prompt.input,
-        context: `${prompt.content.role}\n\n${prompt.content.objective}`,
+        context: `${prompt.content?.role ?? ""}\n\n${prompt.content?.objective ?? ""}`,
       }
     }
   } else if (promptContent) {
