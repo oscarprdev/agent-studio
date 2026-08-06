@@ -354,7 +354,8 @@ export function AgentVersionCompare({
           </Button>
         </DialogFooter>
 
-        {version && (
+        {/* Rollback confirmation — sibling to footer, not nested in body */}
+        {version && rollbackOpen && (
           <AlertDialog open={rollbackOpen} onOpenChange={setRollbackOpen}>
             <AlertDialogContent>
               <AlertDialogHeader>

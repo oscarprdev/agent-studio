@@ -84,8 +84,6 @@ export default function AgentDetailPage() {
   }
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
-  const resolvedAgent = agent
-
   const [draft, setDraft] = useState<AgentDefinition>({
     name: agent.name,
     description: agent.description,
@@ -99,7 +97,7 @@ export default function AgentDetailPage() {
 
   function handleSave() {
     if (!isValidDraft(draft)) return
-    const updated = store.update(resolvedAgent.id, {
+    const updated = store.update(agent.id, {
       name: draft.name.trim(),
       description: draft.description.trim(),
       model: draft.model.trim(),
@@ -117,7 +115,7 @@ export default function AgentDetailPage() {
   }
 
   function handleDuplicate() {
-    const newAgent = store.duplicateAgent(resolvedAgent.id)
+    const newAgent = store.duplicateAgent(agent.id)
     if (newAgent) {
       toast.add({ title: "Agent duplicated", type: "success" })
       router.push(`/agents/${newAgent.id}`)
@@ -127,7 +125,7 @@ export default function AgentDetailPage() {
   }
 
   function handleDelete() {
-    const removed = store.deleteAgent(resolvedAgent.id)
+    const removed = store.deleteAgent(agent.id)
     if (removed) {
       router.push("/agents")
     } else {
@@ -136,24 +134,24 @@ export default function AgentDetailPage() {
   }
 
   function handleExportMarkdown() {
-    const md = store.exportAgentMarkdown(resolvedAgent.id)
+    const md = store.exportAgentMarkdown(agent.id)
     if (md) {
-      downloadFile(md, `${sanitizeFilename(resolvedAgent.name)}.md`, "text/markdown")
+      downloadFile(md, `${sanitizeFilename(agent.name)}.md`, "text/markdown")
     }
   }
 
   function handleExportJson() {
     downloadFile(
-      JSON.stringify({ ...draft, version: resolvedAgent.version, createdAt: resolvedAgent.createdAt, updatedAt: resolvedAgent.updatedAt }, null, 2),
-      `${sanitizeFilename(resolvedAgent.name)}.json`,
+      JSON.stringify({ ...draft, version: agent.version, createdAt: agent.createdAt, updatedAt: agent.updatedAt }, null, 2),
+      `${sanitizeFilename(agent.name)}.json`,
       "application/json",
     )
   }
 
   function handleDeleteVersion(versionId: string): boolean {
-    const ok = store.deleteVersion(resolvedAgent.id, versionId)
+    const ok = store.deleteVersion(agent.id, versionId)
     if (ok) {
-      setVersions(store.getVersions(resolvedAgent.id))
+      setVersions(store.getVersions(agent.id))
       if (selectedVersion?.versionId === versionId) setSelectedVersion(null)
       toast.add({ title: "Version deleted", type: "success" })
     } else {
@@ -163,7 +161,7 @@ export default function AgentDetailPage() {
   }
 
   function handleRollbackVersion(versionId: string): boolean {
-    const restored = store.rollbackToVersion(resolvedAgent.id, versionId)
+    const restored = store.rollbackToVersion(agent.id, versionId)
     if (restored) {
       setAgent(restored)
       setVersions(store.getVersions(restored.id))
