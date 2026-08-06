@@ -40,9 +40,16 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
   const [compareRight, setCompareRight] = useState<PromptVersion | null>(null)
 
   const promptId = prompt?.id ?? ""
+  const draftTitleRef = useRef(draftTitle)
+  const draftMarkdownRef = useRef(draftMarkdown)
+
   const initialTitleRef = useRef(initialTitle)
   const initialMarkdownRef = useRef(initialMarkdown)
   const saveDirtyRef = useRef(false)
+
+  // Keep refs in sync with state
+  draftTitleRef.current = draftTitle
+  draftMarkdownRef.current = draftMarkdown
 
   // Load versions on mount
   useEffect(() => {
@@ -58,10 +65,10 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
   const handleSave = useCallback(() => {
     if (!prompt || !promptId) return
 
-    // Skip if nothing changed
+    // Skip if nothing changed (use refs for stale-safety)
     if (
-      draftTitle === initialTitleRef.current &&
-      draftMarkdown === initialMarkdownRef.current
+      draftTitleRef.current === initialTitleRef.current &&
+      draftMarkdownRef.current === initialMarkdownRef.current
     ) {
       return
     }
@@ -71,11 +78,11 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
     try {
       // Parse markdown → PromptSections
       const { role, objective, tools, workflow, rules, output } =
-        markdownToSections(draftMarkdown)
+        markdownToSections(draftMarkdownRef.current)
 
       // Update prompt (title + content)
       const updated = store.update(promptId, {
-        title: draftTitle,
+        title: draftTitleRef.current,
         content: { role, objective, tools, workflow, rules, output },
       })
 
@@ -84,15 +91,15 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
         const latestVersion = versions[0] ?? null
         const hasDiff =
           !latestVersion ||
-          latestVersion.title !== draftTitle ||
-          latestVersion.markdown !== draftMarkdown
+          latestVersion.title !== draftTitleRef.current ||
+          latestVersion.markdown !== draftMarkdownRef.current
 
         if (hasDiff) {
           try {
             store.savePromptVersion(
               promptId,
-              draftTitle,
-              draftMarkdown,
+              draftTitleRef.current,
+              draftMarkdownRef.current,
               { role, objective, tools, workflow, rules, output }
             )
           } catch {
@@ -136,17 +143,17 @@ export function PromptEditor({ prompt, onSave }: PromptEditorProps) {
     return () => window.removeEventListener("keydown", onKeydown)
   }, [handleSave])
 
-  // Auto-save every 30 seconds if dirty
+  // Auto-save every 30 seconds if dirty (uses refs to avoid stale closure)
   useEffect(() => {
     const interval = setInterval(() => {
       if (saveDirtyRef.current && !isSaving) {
         handleSave()
-        initialTitleRef.current = draftTitle
-        initialMarkdownRef.current = draftMarkdown
+        initialTitleRef.current = draftTitleRef.current
+        initialMarkdownRef.current = draftMarkdownRef.current
       }
     }, 30000)
     return () => clearInterval(interval)
-  }, [handleSave, draftTitle, draftMarkdown, isSaving])
+  }, [handleSave, isSaving])
 
   // Restore version handler
   function handleRestore(version: PromptVersion) {

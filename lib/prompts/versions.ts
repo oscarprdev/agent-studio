@@ -87,27 +87,35 @@ export function savePromptVersion(
   content: PromptSections
 ): PromptVersion | null {
   const now = new Date().toISOString();
+  let attempts = 0;
 
-  const version: PromptVersion = {
-    id: crypto.randomUUID(),
-    promptId,
-    version: versionNumber,
-    title,
-    markdown,
-    content,
-    createdAt: now,
-  };
+  while (attempts < 3) {
+    try {
+      const existing = readVersions(promptId);
+      const computedVersion = Math.max(...existing.map((v) => v.version), 0) + 1;
 
-  try {
-    const versions = readVersions(promptId);
-    // New versions go first (newest-first order).
-    versions.unshift(version);
-    const pruned = prune(versions);
-    writeVersions(promptId, pruned);
-    return version;
-  } catch {
-    return null;
+      const version: PromptVersion = {
+        id: crypto.randomUUID(),
+        promptId,
+        version: computedVersion,
+        title,
+        markdown,
+        content,
+        createdAt: now,
+      };
+
+      existing.unshift(version);
+      const pruned = prune(existing);
+      writeVersions(promptId, pruned);
+      return version;
+    } catch {
+      // retry on storage failure (e.g. quota), up to 3 times
+      attempts++;
+      if (attempts >= 3) return null;
+    }
   }
+
+  return null;
 }
 
 /**

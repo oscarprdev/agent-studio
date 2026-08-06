@@ -15,7 +15,6 @@ interface VersionHistoryProps {
   isOpen: boolean
   onClose: () => void
   onRestore: (version: PromptVersion) => void
-  selectedVersion?: PromptVersion | null
 }
 
 export function VersionHistory({
@@ -23,9 +22,8 @@ export function VersionHistory({
   isOpen,
   onClose,
   onRestore,
-  selectedVersion,
 }: VersionHistoryProps) {
-  const [selectedId, setSelectedId] = useState<string | null>(selectedVersion?.id ?? null)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
 
   function handleOpenChange(open: boolean) {
     if (!open) onClose()
