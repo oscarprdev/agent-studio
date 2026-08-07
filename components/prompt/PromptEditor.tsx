@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { CopyIcon, EditIcon, Trash2Icon } from "lucide-react"
 
-interface PromptEditorProps {
+export interface PromptEditorProps {
   prompt: Prompt | null
   onSave?: (prompt: Prompt) => void
   isEditing?: boolean
