@@ -84,6 +84,10 @@ export function AgentVersionHistory({
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
   const [rollbackOpen, setRollbackOpen] = useState(false)
   const [rollbackTargetId, setRollbackTargetId] = useState<string | null>(null)
+  const rollbackTargetLabel =
+    (rollbackTargetId &&
+      versions.find((v) => v.versionId === rollbackTargetId)?.versionLabel) ||
+    "?"
 
   function handleDeleteConfirm(versionId: string) {
     setDeleteTargetId(null)
@@ -373,16 +377,7 @@ export function AgentVersionHistory({
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                Roll back to version{" "}
-                {rollbackTargetId
-                  ? (() => {
-                      const target = versions.find(
-                        (v) => v.versionId === rollbackTargetId,
-                      )
-                      return target ? target.versionLabel : "?"
-                    })()
-                  : "?"}{" "}
-                ?
+                Roll back to version {rollbackTargetLabel} ?
               </AlertDialogTitle>
               <AlertDialogDescription>
                 This will restore the agent to this version&apos;s
