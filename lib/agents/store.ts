@@ -195,7 +195,7 @@ export function remove(id: string): boolean {
     const agents = readAll();
     const filtered = agents.filter((a) => a.id !== id);
     if (filtered.length === agents.length) return false;
-// Clean up versions BEFORE persist so the agent still exists
+    // Clean up versions BEFORE persist so the agent still exists
     // when cleanupAgentVersions checks getAgent(agentId)
     cleanupAgentVersions(id);
     persist(filtered);
